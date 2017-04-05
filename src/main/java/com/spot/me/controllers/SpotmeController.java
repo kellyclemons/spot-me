@@ -2,16 +2,14 @@ package com.spot.me.controllers;
 
 import com.spot.me.entities.User;
 import com.spot.me.services.UserRepository;
-import com.spot.me.utilities.PasswordStorage;
+import com.spot.me.utilities.JsonUser;
+import jodd.json.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
+@CrossOrigin
 @RestController
 public class SpotmeController {
     @Autowired
@@ -23,11 +21,14 @@ public class SpotmeController {
     }
 
     @RequestMapping(path="/login")
-    public User login(String email, String password, HttpServletResponse response) throws Exception {
-        User user = users.findFirstByEmail(email);
+    public User login(@RequestBody String body, HttpServletResponse response) throws Exception {
+        JsonParser p = new JsonParser();
+        JsonUser name = p.parse(body, JsonUser.class);
+
+        User user = users.findFirstByEmail(name.getEmail());
         if(user == null) {
             return user;
-        }else if (! PasswordStorage.verifyPassword(password,user.getPassword())) {
+        }else if (! user.verifyPassword(name.getPassword())) {
             response.sendError(401, "Invalid Credentials");
         }
         return user;
