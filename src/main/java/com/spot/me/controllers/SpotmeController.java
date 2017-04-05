@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 
-@CrossOrigin
 @RestController
 public class SpotmeController {
     @Autowired
