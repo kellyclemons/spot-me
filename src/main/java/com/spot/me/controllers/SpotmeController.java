@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SpotmeController {
-    @RequestMapping(path="/")
+    @RequestMapping(path="/login")
     public String home(){
         return "";
     }
