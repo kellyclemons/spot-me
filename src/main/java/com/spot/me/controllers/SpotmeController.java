@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -25,6 +26,7 @@ public class SpotmeController {
         JsonParser p = new JsonParser();
         JsonUser name = p.parse(body, JsonUser.class);
 
+
         User user = users.findFirstByEmail(name.getEmail());
         if(user == null) {
             return user;
@@ -35,12 +37,15 @@ public class SpotmeController {
     }
 
     @RequestMapping(path="/register")
-    public User Register(String email, String name, String password, HttpServletResponse response) throws Exception {
-        User user = users.findFirstByEmail(email);
+    public User Register(@RequestBody String body,  HttpServletResponse response) throws Exception {
+        JsonParser p = new JsonParser();
+        JsonUser u = p.parse(body, JsonUser.class);
+
+        User user = users.findFirstByEmail(u.getEmail());
         if(user != null) {
             response.sendError(422, "Username is taken.");
         }else{
-            user = new User(email, name, password);
+            user = new User(u.getEmail(), u.getName(), u.getPassword());
             users.save(user);
         }
 
