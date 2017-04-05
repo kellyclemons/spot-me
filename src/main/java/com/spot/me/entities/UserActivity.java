@@ -5,7 +5,7 @@ import java.util.Collection;
 
 @Entity
 @Table(name="userActivities")
-public class userActivity {
+public class UserActivity {
 
     @Id
     @GeneratedValue
@@ -17,7 +17,7 @@ public class userActivity {
     @ManyToOne
     private ActivityName activityName;
 
-    public userActivity() {
+    public UserActivity() {
     }
 
     public int getId() {

@@ -1,6 +1,8 @@
 package com.spot.me.entities;
 
 
+import com.spot.me.utilities.PasswordStorage;
+
 import javax.persistence.*;
 import java.util.Collection;
 
@@ -36,16 +38,16 @@ public class User {
     @Column
     private double longitude;
 
-    @ManyToMany(mappedBy = "users", targetEntity=userActivity.class)
-    private Collection<userActivity> activities;
+    @ManyToMany(mappedBy = "users", targetEntity=UserActivity.class)
+    private Collection<UserActivity> activities;
 
     public User() {
     }
 
-    public User(String email, String name, String password) {
+    public User(String email, String name, String password) throws PasswordStorage.CannotPerformOperationException {
         this.email = email;
         this.name = name;
-        this.password = password;
+        setPassword(password);
     }
 
     public int getId() {
@@ -76,8 +78,8 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String password) throws PasswordStorage.CannotPerformOperationException {
+        this.password = PasswordStorage.createHash(password);
     }
 
     public String getPhoneNumber() {
@@ -104,11 +106,20 @@ public class User {
         this.bio = bio;
     }
 
-    public Collection<userActivity> getActivities() {
+    public Collection<UserActivity> getActivities() {
         return activities;
     }
 
-    public void setActivities(Collection<userActivity> activities) {
+    public void setActivities(Collection<UserActivity> activities) {
         this.activities = activities;
+    }
+
+    public boolean verifyPassword(String password) throws PasswordStorage.InvalidHashException, PasswordStorage.CannotPerformOperationException {
+
+        return PasswordStorage.verifyPassword(password, getPasswordHash());
+    }
+
+    public String getPasswordHash() {
+        return password;
     }
 }
