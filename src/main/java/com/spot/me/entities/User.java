@@ -1,8 +1,6 @@
 package com.spot.me.entities;
 
-
 import com.spot.me.utilities.PasswordStorage;
-
 import javax.persistence.*;
 import java.util.Collection;
 

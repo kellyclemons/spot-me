@@ -1,0 +1,6 @@
+{
+  "name": "Spot me application",
+  "description": "A place for people to meet to excercise together",
+  "image": "heroku/java",
+  "addons": [ "heroku-postgresql" ]
+}
