@@ -1,6 +1,8 @@
 package com.spot.me.entities;
 
 import com.spot.me.utilities.PasswordStorage;
+import org.hibernate.annotations.Immutable;
+
 import javax.persistence.*;
 import java.util.Collection;
 
@@ -44,6 +46,8 @@ public class User {
         this.name = name;
         setPassword(password);
     }
+
+
 
     public int getId() {
         return id;

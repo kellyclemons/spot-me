@@ -20,27 +20,27 @@ import java.util.Map;
 public class SpotmeController {
     @Autowired
     UserRepository users;
-
     @Autowired
     private ActivityNameRepository activityName;
-
     @Autowired
     private UserActivityRepository userActivity;
-
     @Autowired
     private AvailabilityDayRepository availableDays;
-
     @Autowired
     private UserAvailabilityRepository userAvailability;
+    @Autowired
+    private AgeRangeRepository ageRange;
+    @Autowired
+    private UserAgeRangeRepository userAgeRange;
 
     @PostConstruct
     public void init() {
         if(activityName.count() == 0) {
             String[] activities = {
-                    "tennis",
-                    "running",
-                    "lifting",
-                    "walking"
+                    "Tennis",
+                    "Running",
+                    "Lifting",
+                    "Walking"
             };
 
             for (String a : activities) {
@@ -53,6 +53,14 @@ public class SpotmeController {
 
             for (String day : days) {
                 availableDays.save(new AvailabilityDay(day));
+            }
+        }
+
+        if(userAgeRange.count() == 0){
+            String[] range = {"18-24", "25-34", "35-44", "45-54", "55-64", "over 65"};
+
+            for (String r : range) {
+                ageRange.save(new AgeRange(r));
             }
         }
     }
@@ -114,5 +122,19 @@ public class SpotmeController {
         return "";
     }
 
+    @RequestMapping(path="/add-zip", method=RequestMethod.POST)
+    public String addZip(@RequestBody Map<String, Object> body, HttpServletResponse response){
+        User user = users.findFirstByEmail((String)body.get("email"));
+        user.setAreaCode((String)body.get("zipcode"));
+        users.save(user);
+        return "";
+    }
+
+    @RequestMapping(path="/edit-profile")
+    public String updateProfile(@RequestBody Map<String, Object> body, HttpServletResponse response){
+
+
+        return "";
+    }
 
 }

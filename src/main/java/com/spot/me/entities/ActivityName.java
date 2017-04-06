@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="ActivityName")
+@Table(name="activityName")
 public class ActivityName {
     @Id
     @GeneratedValue
