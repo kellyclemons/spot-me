@@ -89,14 +89,17 @@ public class SpotmeController {
     }
 
     @RequestMapping(path="/add-activity", method=RequestMethod.POST)
-    public User addActivity(@RequestBody String body, HttpServletResponse response){
-        JsonParser p = new JsonParser();
-        GetEmailAndActivity activity = p.parse(body, GetEmailAndActivity.class);
+    public User addActivity(@RequestBody Map<String, Object> body, HttpServletResponse response){
 
-        User user = users.findFirstByEmail(activity.getEmail());
-        ActivityName a = activityName.findFirstByName(activity.getEmail());
-        UserActivity u = new UserActivity(user, a);
-        userActivity.save(u);
+        User user = users.findFirstByEmail((String)body.get("email"));
+        ArrayList list = (ArrayList) body.get("activity");
+
+        for(Object a : list) {
+            ActivityName name = activityName.findFirstByName((String)a);
+            UserActivity u = new UserActivity(user,name);
+            userActivity.save(u);
+        }
+
         return user;
     }
 
