@@ -1,9 +1,11 @@
 package com.spot.me.controllers;
 
 import com.spot.me.entities.ActivityName;
+import com.spot.me.entities.AvailabilityDay;
 import com.spot.me.entities.User;
 import com.spot.me.entities.UserActivity;
 import com.spot.me.services.ActivityNameRepository;
+import com.spot.me.services.AvailabilityDayRepository;
 import com.spot.me.services.UserActivityRepository;
 import com.spot.me.services.UserRepository;
 import com.spot.me.utilities.GetEmailAndActivity;
@@ -27,18 +29,31 @@ public class SpotmeController {
     @Autowired
     UserActivityRepository userActivity;
 
+    @Autowired
+    AvailabilityDayRepository availabilityDay;
+
     @PostConstruct
     public void init() {
-//        String[] activities = {
-//                "tennis",
-//                "running",
-//                "lifting",
-//                "walking"
-//        };
-//
-//        for(String a : activities) {
-//            activityName.save(new ActivityName(a));
-//        }
+        if(activityName.count() == 0) {
+            String[] activities = {
+                    "tennis",
+                    "running",
+                    "lifting",
+                    "walking"
+            };
+
+            for (String a : activities) {
+                activityName.save(new ActivityName(a));
+            }
+        }
+
+        if(availabilityDay.count() == 0){
+            String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+
+            for (String day : days) {
+                availabilityDay.save(new AvailabilityDay(day));
+            }
+        }
     }
 
 
@@ -46,7 +61,6 @@ public class SpotmeController {
     public User login(@RequestBody String body, HttpServletResponse response) throws Exception {
         JsonParser p = new JsonParser();
         JsonUser name = p.parse(body, JsonUser.class);
-
 
         User user = users.findFirstByEmail(name.getEmail());
         if(user == null) {
@@ -79,7 +93,7 @@ public class SpotmeController {
         GetEmailAndActivity activity = p.parse(body, GetEmailAndActivity.class);
 
         User user = users.findFirstByEmail(activity.getEmail());
-        ActivityName a = activityName.findFirstByName(activity.getActivity());
+        ActivityName a = activityName.findFirstByName(activity.getEmail());
         UserActivity u = new UserActivity(user, a);
         userActivity.save(u);
         return user;
