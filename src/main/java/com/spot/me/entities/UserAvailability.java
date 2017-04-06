@@ -14,6 +14,11 @@ public class UserAvailability {
     @ManyToOne
     private AvailabilityDay availableDay;
 
+    public UserAvailability(User user, AvailabilityDay availableDay) {
+        this.user = user;
+        this.availableDay = availableDay;
+    }
+
     public UserAvailability() {
     }
 

@@ -1,13 +1,7 @@
 package com.spot.me.controllers;
 
-import com.spot.me.entities.ActivityName;
-import com.spot.me.entities.AvailabilityDay;
-import com.spot.me.entities.User;
-import com.spot.me.entities.UserActivity;
-import com.spot.me.services.ActivityNameRepository;
-import com.spot.me.services.AvailabilityDayRepository;
-import com.spot.me.services.UserActivityRepository;
-import com.spot.me.services.UserRepository;
+import com.spot.me.entities.*;
+import com.spot.me.services.*;
 import com.spot.me.utilities.GetEmailAndActivity;
 import com.spot.me.utilities.JsonUser;
 import jodd.json.JsonParser;
@@ -16,6 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -24,13 +22,16 @@ public class SpotmeController {
     UserRepository users;
 
     @Autowired
-    ActivityNameRepository activityName;
+    private ActivityNameRepository activityName;
 
     @Autowired
-    UserActivityRepository userActivity;
+    private UserActivityRepository userActivity;
 
     @Autowired
-    AvailabilityDayRepository availabilityDay;
+    private AvailabilityDayRepository availableDays;
+
+    @Autowired
+    private UserAvailabilityRepository userAvailability;
 
     @PostConstruct
     public void init() {
@@ -47,11 +48,11 @@ public class SpotmeController {
             }
         }
 
-        if(availabilityDay.count() == 0){
+        if(availableDays.count() == 0){
             String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
             for (String day : days) {
-                availabilityDay.save(new AvailabilityDay(day));
+                availableDays.save(new AvailabilityDay(day));
             }
         }
     }
@@ -97,6 +98,17 @@ public class SpotmeController {
         UserActivity u = new UserActivity(user, a);
         userActivity.save(u);
         return user;
+    }
+
+    @RequestMapping(path="/add-availability", method=RequestMethod.POST)
+    public String addAvailability(@RequestBody Map<String, Object> body, HttpServletResponse response){
+        User user = users.findFirstByEmail((String)body.get("email"));
+        ArrayList list = (ArrayList) body.get("availability");
+        for(Object s : list) {
+            AvailabilityDay day = availableDays.findFirstByDay((String)s);
+            userAvailability.save(new UserAvailability(user,day));
+        }
+        return "";
     }
 
 
