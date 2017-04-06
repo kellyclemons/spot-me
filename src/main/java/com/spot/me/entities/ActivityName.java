@@ -16,7 +16,12 @@ public class ActivityName {
     @Column(nullable=false)
     private String name;
 
+
     public ActivityName() {
+    }
+
+    public ActivityName(String name) {
+        this.name = name;
     }
 
     public int getId() {

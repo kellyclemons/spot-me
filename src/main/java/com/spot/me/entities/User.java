@@ -36,9 +36,6 @@ public class User {
     @Column
     private double longitude;
 
-    @ManyToMany(mappedBy = "users", targetEntity=UserActivity.class)
-    private Collection<UserActivity> activities;
-
     public User() {
     }
 
@@ -102,14 +99,6 @@ public class User {
 
     public void setBio(String bio) {
         this.bio = bio;
-    }
-
-    public Collection<UserActivity> getActivities() {
-        return activities;
-    }
-
-    public void setActivities(Collection<UserActivity> activities) {
-        this.activities = activities;
     }
 
     public boolean verifyPassword(String password) throws PasswordStorage.InvalidHashException, PasswordStorage.CannotPerformOperationException {

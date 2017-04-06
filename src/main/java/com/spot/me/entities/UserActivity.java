@@ -12,12 +12,17 @@ public class UserActivity {
     private int id;
 
     @ManyToOne
-    private User users;
+    private User user;
 
     @ManyToOne
     private ActivityName activityName;
 
     public UserActivity() {
+    }
+
+    public UserActivity(User user, ActivityName activityName){
+        this.user = user;
+        this.activityName = activityName;
     }
 
     public int getId() {
@@ -28,12 +33,12 @@ public class UserActivity {
         this.id = id;
     }
 
-    public User getUsers() {
-        return users;
+    public User getUser() {
+        return user;
     }
 
-    public void setUsers(User users) {
-        this.users = users;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public ActivityName getActivityName() {
