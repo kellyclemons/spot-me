@@ -1,6 +1,4 @@
-package com.spot.me.JsonApi;
-
-import java.util.Map;
+package com.spot.me.utilities.JsonApi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

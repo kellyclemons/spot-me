@@ -4,22 +4,35 @@ import javax.persistence.*;
 
 @Entity
 public class UserAvailability {
+    static private final String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     @Id
     @GeneratedValue
     int id;
 
+    @Column(nullable=false)
+    String day;
+
     @ManyToOne
     private User user;
 
-    @ManyToOne
-    private AvailabilityDay availableDay;
-
-    public UserAvailability(User user, AvailabilityDay availableDay) {
-        this.user = user;
-        this.availableDay = availableDay;
+    public UserAvailability(User user, String day) {
+        for(String d : days){
+            if(d.equals(day)) {
+                this.user = user;
+                this.day = day;
+            }
+        }
     }
 
     public UserAvailability() {
+    }
+
+    public String getDay() {
+        return day;
+    }
+
+    public void setDay(String day) {
+        this.day = day;
     }
 
     public int getId() {
@@ -39,11 +52,4 @@ public class UserAvailability {
         this.user = user;
     }
 
-    public AvailabilityDay getAvailableDay() {
-        return availableDay;
-    }
-
-    public void setAvailableDay(AvailabilityDay availableDay) {
-        this.availableDay = availableDay;
-    }
 }

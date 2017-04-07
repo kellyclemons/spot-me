@@ -1,4 +1,4 @@
-package com.spot.me.JsonApi;
+package com.spot.me.utilities.JsonApi;
 
 import java.util.Map;
 

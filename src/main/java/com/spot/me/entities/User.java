@@ -23,20 +23,6 @@ public class User {
     @Column(nullable=false)
     private String password;
 
-    @Column
-    private String phoneNumber;
-
-    @Column
-    private String areaCode;
-
-    @Column(length = 500)
-    private String bio;
-
-    @Column
-    private double latitude;
-
-    @Column
-    private double longitude;
 
     public User() {
     }
@@ -46,8 +32,6 @@ public class User {
         this.name = name;
         setPassword(password);
     }
-
-
 
     public int getId() {
         return id;
@@ -79,30 +63,6 @@ public class User {
 
     public void setPassword(String password) throws PasswordStorage.CannotPerformOperationException {
         this.password = PasswordStorage.createHash(password);
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getAreaCode() {
-        return areaCode;
-    }
-
-    public void setAreaCode(String areaCode) {
-        this.areaCode = areaCode;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
     }
 
     public boolean verifyPassword(String password) throws PasswordStorage.InvalidHashException, PasswordStorage.CannotPerformOperationException {

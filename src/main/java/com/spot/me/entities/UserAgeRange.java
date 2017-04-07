@@ -5,18 +5,35 @@ import javax.persistence.*;
 @Entity
 @Table(name="userAgeRange")
 public class UserAgeRange {
+    static private final String[] range = {"18-24", "25-34", "35-44", "45-54", "55-64", "over 65"};
+
     @Id
     @GeneratedValue
     int id;
 
+    String ageRange;
+
     @ManyToOne
     private User user;
 
-    @ManyToOne
-    private AgeRange ageRange;
+    public UserAgeRange(User user, String ageRange) {
+        for(String d : range) {
+            if(d.equals(range)) {
+                this.user = user;
+                this.ageRange = ageRange;
+            }
+        }
+    }
 
-    public UserAgeRange(User user, AgeRange ageRange) {
-        this.user = user;
+    public static String[] getRange() {
+        return range;
+    }
+
+    public String getAgeRange() {
+        return ageRange;
+    }
+
+    public void setAgeRange(String ageRange) {
         this.ageRange = ageRange;
     }
 
@@ -36,11 +53,4 @@ public class UserAgeRange {
         this.user = user;
     }
 
-    public AgeRange getAgeRange() {
-        return ageRange;
-    }
-
-    public void setAgeRange(AgeRange ageRange) {
-        this.ageRange = ageRange;
-    }
 }

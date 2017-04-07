@@ -25,11 +25,7 @@ public class SpotmeController {
     @Autowired
     private UserActivityRepository userActivity;
     @Autowired
-    private AvailabilityDayRepository availableDays;
-    @Autowired
     private UserAvailabilityRepository userAvailability;
-    @Autowired
-    private AgeRangeRepository ageRange;
     @Autowired
     private UserAgeRangeRepository userAgeRange;
 
@@ -45,22 +41,6 @@ public class SpotmeController {
 
             for (String a : activities) {
                 activityName.save(new ActivityName(a));
-            }
-        }
-
-        if(availableDays.count() == 0){
-            String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-
-            for (String day : days) {
-                availableDays.save(new AvailabilityDay(day));
-            }
-        }
-
-        if(userAgeRange.count() == 0){
-            String[] range = {"18-24", "25-34", "35-44", "45-54", "55-64", "over 65"};
-
-            for (String r : range) {
-                ageRange.save(new AgeRange(r));
             }
         }
     }
@@ -116,8 +96,7 @@ public class SpotmeController {
         User user = users.findFirstByEmail((String)body.get("email"));
         ArrayList list = (ArrayList) body.get("availability");
         for(Object s : list) {
-            AvailabilityDay day = availableDays.findFirstByDay((String)s);
-            userAvailability.save(new UserAvailability(user,day));
+            userAvailability.save(new UserAvailability(user,(String)s));
         }
         return "";
     }
@@ -137,12 +116,3 @@ public class SpotmeController {
     }
 
 }
-//{
-//        "name":"blake",
-//        "email":"blake@blake.com",
-//        "gender":"male",
-//        "age range":"25-34",
-//        "location": "38401",
-//        "bio":"I am blake, You know...Workout with me",
-//        "activities": ""
-//        }
