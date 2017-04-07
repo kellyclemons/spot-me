@@ -133,8 +133,16 @@ public class SpotmeController {
     @RequestMapping(path="/edit-profile")
     public String updateProfile(@RequestBody Map<String, Object> body, HttpServletResponse response){
 
-
         return "";
     }
 
 }
+//{
+//        "name":"blake",
+//        "email":"blake@blake.com",
+//        "gender":"male",
+//        "age range":"25-34",
+//        "location": "38401",
+//        "bio":"I am blake, You know...Workout with me",
+//        "activities": ""
+//        }
