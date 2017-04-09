@@ -2,10 +2,12 @@ package com.spot.me.controllers;
 
 import com.spot.me.Parers.RootParser;
 import com.spot.me.entities.*;
+import com.spot.me.serializers.LoginUserSerializer;
 import com.spot.me.serializers.RootSerializer;
 import com.spot.me.serializers.UserSerializer;
 import com.spot.me.services.*;
 import com.spot.me.utilities.JsonUser;
+import com.spot.me.utilities.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,10 +32,12 @@ public class UserController {
 
     RootSerializer rootSerializer;
     UserSerializer userSerializer;
+    LoginUserSerializer loginUserSerializer;
 
     public UserController() {
         rootSerializer = new RootSerializer();
         userSerializer = new UserSerializer();
+        loginUserSerializer = new LoginUserSerializer();
     }
 
     @PostConstruct
@@ -53,18 +57,20 @@ public class UserController {
     }
 
     @RequestMapping(path="/login", method=RequestMethod.POST)
-    public Map<String, Object> login(HttpServletResponse response, @RequestBody RootParser<JsonUser> parser) throws Exception {
-        JsonUser user = parser.getData().getEntity();
-        User email = users.findFirstByEmail(user.getEmail());
+    public Map<String, Object> login(HttpServletResponse response, @RequestBody RootParser<User> parser) throws Exception {
+        User user = parser.getData().getEntity();
+        User existingUser = users.findFirstByEmail(user.getEmail());
 
-        if(user == null) {
-            response.sendError(401, "Invalid Credentials");
-        }else if (! email.verifyPassword(email.getPassword())) {
+//        if(existingUser == null || ! existingUser.verifyPassword(user.getPassword())) {
+//            response.sendError(401, "Invalid Credentials");
+//        }
+        if(existingUser == null || ! existingUser.getPassword().equals(user.getPassword())) {
             response.sendError(401, "Invalid Credentials");
         }
+
         return rootSerializer.serializeOne(
-                "/login/" + user.getId(),
-                user,
+                "/login/" + existingUser.getId(),
+                existingUser,
                 userSerializer);
     }
 
@@ -77,16 +83,11 @@ public class UserController {
             response.sendError(422, "Username is taken.");
         }else{
             users.save(user);
-            return rootSerializer.serializeOne(
-                    "/register/" + user.getId(),
-                    user,
-                    userSerializer);
         }
         return rootSerializer.serializeOne(
                 "/register/" + user.getId(),
                 user,
                 userSerializer);
-
     }
 
     @RequestMapping(path="/add-activity", method=RequestMethod.POST)
