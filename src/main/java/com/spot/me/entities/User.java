@@ -29,7 +29,7 @@ public class User implements HasId{
     public User(String email, String name, String password) throws PasswordStorage.CannotPerformOperationException {
         this.email = email;
         this.name = name;
-        setPassword(password);
+        this.password = password;
     }
 
     public String getId() {
@@ -60,10 +60,13 @@ public class User implements HasId{
         return password;
     }
 
-    public void setPassword(String password) throws PasswordStorage.CannotPerformOperationException {
-        this.password = PasswordStorage.createHash(password);
+    public String setPassword(String password){
+        return this.password = password;
     }
 
+    public String createHashPassword(String password) throws PasswordStorage.CannotPerformOperationException {
+        return this.password = PasswordStorage.createHash(password);
+    }
     public boolean verifyPassword(String password) throws PasswordStorage.InvalidHashException, PasswordStorage.CannotPerformOperationException {
 
         return PasswordStorage.verifyPassword(password, getPasswordHash());

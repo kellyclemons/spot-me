@@ -61,10 +61,7 @@ public class UserController {
         User user = parser.getData().getEntity();
         User existingUser = users.findFirstByEmail(user.getEmail());
 
-//        if(existingUser == null || ! existingUser.verifyPassword(user.getPassword())) {
-//            response.sendError(401, "Invalid Credentials");
-//        }
-        if(existingUser == null || ! existingUser.getPassword().equals(user.getPassword())) {
+        if(existingUser == null || ! existingUser.verifyPassword(user.getPassword())) {
             response.sendError(401, "Invalid Credentials");
         }
 
@@ -78,15 +75,16 @@ public class UserController {
     public Map<String, Object> register(HttpServletResponse response, @RequestBody RootParser<User> parser) throws Exception {
         User user = parser.getData().getEntity();
         User existingUser = users.findFirstByEmail(user.getEmail());
-
+        User u = new User();
         if(existingUser != null) {
             response.sendError(422, "Username is taken.");
         }else{
-            users.save(user);
+            u = new User(user.getEmail(), user.getName(), user.createHashPassword(user.getPassword()));
+            users.save(u);
         }
         return rootSerializer.serializeOne(
-                "/register/" + user.getId(),
-                user,
+                "/register/" + u.getId(),
+                u,
                 userSerializer);
     }
 
