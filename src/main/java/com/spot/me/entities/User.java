@@ -1,18 +1,18 @@
 package com.spot.me.entities;
 
 import com.spot.me.utilities.PasswordStorage;
-import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Collection;
 
 @Entity
 @Table(name="users")
-public class User {
+public class User implements HasId{
 
     @Id
-    @GeneratedValue
-    private int id;
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    private String id;
 
     @Column(nullable=false)
     private String email;
@@ -23,7 +23,6 @@ public class User {
     @Column(nullable=false)
     private String password;
 
-
     public User() {
     }
 
@@ -33,11 +32,11 @@ public class User {
         setPassword(password);
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

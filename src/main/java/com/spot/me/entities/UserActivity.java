@@ -1,4 +1,6 @@
 package com.spot.me.entities;
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 import java.util.Collection;
@@ -8,8 +10,9 @@ import java.util.Collection;
 public class UserActivity {
 
     @Id
-    @GeneratedValue
-    private int id;
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    private String id;
 
     @ManyToOne
     private User user;
@@ -25,11 +28,11 @@ public class UserActivity {
         this.activityName = activityName;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

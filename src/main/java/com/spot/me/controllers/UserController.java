@@ -1,23 +1,22 @@
 package com.spot.me.controllers;
 
+import com.spot.me.Parers.RootParser;
 import com.spot.me.entities.*;
+import com.spot.me.serializers.RootSerializer;
+import com.spot.me.serializers.UserSerializer;
 import com.spot.me.services.*;
-import com.spot.me.utilities.GetEmailAndActivity;
 import com.spot.me.utilities.JsonUser;
-import jodd.json.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
 @RestController
-public class SpotmeController {
+public class UserController {
     @Autowired
     UserRepository users;
     @Autowired
@@ -28,6 +27,14 @@ public class SpotmeController {
     private UserAvailabilityRepository userAvailability;
     @Autowired
     private UserAgeRangeRepository userAgeRange;
+
+    RootSerializer rootSerializer;
+    UserSerializer userSerializer;
+
+    public UserController() {
+        rootSerializer = new RootSerializer();
+        userSerializer = new UserSerializer();
+    }
 
     @PostConstruct
     public void init() {
@@ -45,35 +52,41 @@ public class SpotmeController {
         }
     }
 
-
     @RequestMapping(path="/login", method=RequestMethod.POST)
-    public User login(@RequestBody String body, HttpServletResponse response) throws Exception {
-        JsonParser p = new JsonParser();
-        JsonUser name = p.parse(body, JsonUser.class);
+    public Map<String, Object> login(HttpServletResponse response, @RequestBody RootParser<JsonUser> parser) throws Exception {
+        JsonUser user = parser.getData().getEntity();
+        User email = users.findFirstByEmail(user.getEmail());
 
-        User user = users.findFirstByEmail(name.getEmail());
         if(user == null) {
-            return user;
-        }else if (! user.verifyPassword(name.getPassword())) {
+            response.sendError(401, "Invalid Credentials");
+        }else if (! email.verifyPassword(email.getPassword())) {
             response.sendError(401, "Invalid Credentials");
         }
-        return user;
+        return rootSerializer.serializeOne(
+                "/login/" + user.getId(),
+                user,
+                userSerializer);
     }
 
     @RequestMapping(path="/register", method=RequestMethod.POST)
-    public User Register(@RequestBody String body,  HttpServletResponse response) throws Exception {
-        JsonParser p = new JsonParser();
-        JsonUser u = p.parse(body, JsonUser.class);
+    public Map<String, Object> register(HttpServletResponse response, @RequestBody RootParser<User> parser) throws Exception {
+        User user = parser.getData().getEntity();
+        User existingUser = users.findFirstByEmail(user.getEmail());
 
-        User user = users.findFirstByEmail(u.getEmail());
-        if(user != null) {
+        if(existingUser != null) {
             response.sendError(422, "Username is taken.");
         }else{
-            user = new User(u.getEmail(), u.getName(), u.getPassword());
             users.save(user);
+            return rootSerializer.serializeOne(
+                    "/register/" + user.getId(),
+                    user,
+                    userSerializer);
         }
+        return rootSerializer.serializeOne(
+                "/register/" + user.getId(),
+                user,
+                userSerializer);
 
-        return user;
     }
 
     @RequestMapping(path="/add-activity", method=RequestMethod.POST)
@@ -101,13 +114,13 @@ public class SpotmeController {
         return "";
     }
 
-    @RequestMapping(path="/add-zip", method=RequestMethod.POST)
-    public String addZip(@RequestBody Map<String, Object> body, HttpServletResponse response){
-        User user = users.findFirstByEmail((String)body.get("email"));
-        user.setAreaCode((String)body.get("zipcode"));
-        users.save(user);
-        return "";
-    }
+//    @RequestMapping(path="/add-zip", method=RequestMethod.POST)
+//    public String addZip(@RequestBody Map<String, Object> body, HttpServletResponse response){
+//        User user = users.findFirstByEmail((String)body.get("email"));
+//        user.setAreaCode((String)body.get("zipcode"));
+//        users.save(user);
+//        return "";
+//    }
 
     @RequestMapping(path="/edit-profile")
     public String updateProfile(@RequestBody Map<String, Object> body, HttpServletResponse response){

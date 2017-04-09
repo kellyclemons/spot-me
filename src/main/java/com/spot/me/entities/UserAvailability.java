@@ -1,4 +1,6 @@
 package com.spot.me.entities;
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 
@@ -6,8 +8,9 @@ import javax.persistence.*;
 public class UserAvailability {
     static private final String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     @Id
-    @GeneratedValue
-    int id;
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    String id;
 
     @Column(nullable=false)
     String day;
@@ -35,11 +38,11 @@ public class UserAvailability {
         this.day = day;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

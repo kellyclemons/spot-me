@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by BHarris on 4/7/17.
  */
-public interface ProfileRepository extends CrudRepository<Profile, Integer> {
+public interface ProfileRepository extends CrudRepository<Profile, String> {
 }

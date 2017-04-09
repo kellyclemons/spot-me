@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by BHarris on 4/6/17.
  */
-public interface UserAgeRangeRepository extends CrudRepository<UserAgeRange, Integer> {
+public interface UserAgeRangeRepository extends CrudRepository<UserAgeRange, String> {
 }

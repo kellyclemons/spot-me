@@ -1,10 +1,7 @@
-package com.spot.me.serializers;
+package com.spot.me.entities;
 
 import java.io.Serializable;
 
-/**
- * Created by ryan on 4/3/17.
- */
 public interface HasId extends Serializable {
     String getId();
 }

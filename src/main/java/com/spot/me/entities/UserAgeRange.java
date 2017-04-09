@@ -1,5 +1,7 @@
 package com.spot.me.entities;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,8 +10,9 @@ public class UserAgeRange {
     static private final String[] range = {"18-24", "25-34", "35-44", "45-54", "55-64", "over 65"};
 
     @Id
-    @GeneratedValue
-    int id;
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    String id;
 
     String ageRange;
 
@@ -37,11 +40,11 @@ public class UserAgeRange {
         this.ageRange = ageRange;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

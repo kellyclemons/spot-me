@@ -1,8 +1,11 @@
 package com.spot.me.serializers;
 
+import com.spot.me.entities.HasId;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+
 
 
 public abstract class JsonDataSerializer {
@@ -35,7 +38,7 @@ public abstract class JsonDataSerializer {
         result.put("type", this.getType());
         result.put("id", data.getId());
         result.put("attributes", this.getAttributes(data));
-        result.put("relationships", this.getRelationships(data.getId()));
+        // result.put("relationships", this.getRelationships(data.getId()));
 
         return result;
     }
