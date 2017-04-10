@@ -1,8 +1,8 @@
 package com.spot.me.controllers;
 
-import com.spot.me.Parers.RootParser;
+import com.spot.me.Parsers.RootParser;
 import com.spot.me.entities.*;
-import com.spot.me.serializers.LoginUserSerializer;
+import com.spot.me.serializers.ActivityNameSerializer;
 import com.spot.me.serializers.RootSerializer;
 import com.spot.me.serializers.UserSerializer;
 import com.spot.me.services.*;
@@ -32,12 +32,13 @@ public class UserController {
 
     RootSerializer rootSerializer;
     UserSerializer userSerializer;
-    LoginUserSerializer loginUserSerializer;
+    ActivityNameSerializer activityNameSerializer;
+
 
     public UserController() {
         rootSerializer = new RootSerializer();
         userSerializer = new UserSerializer();
-        loginUserSerializer = new LoginUserSerializer();
+        activityNameSerializer = new ActivityNameSerializer();
     }
 
     @PostConstruct
@@ -89,18 +90,19 @@ public class UserController {
     }
 
     @RequestMapping(path="/add-activity", method=RequestMethod.POST)
-    public User addActivity(@RequestBody Map<String, Object> body, HttpServletResponse response){
+    public Map<String, Object> addActivity(HttpServletResponse response, @RequestBody RootParser<ActivityName> parser){
+        ActivityName activity = parser.getData().getEntity();
+        User user = users.findFirstById(activity.getId());
 
-        User user = users.findFirstByEmail((String)body.get("email"));
-        ArrayList list = (ArrayList) body.get("activity");
-
-        for(Object a : list) {
-            ActivityName name = activityName.findFirstByName((String)a);
-            UserActivity u = new UserActivity(user,name);
-            userActivity.save(u);
+        for (String a : activity.getName()) {
+            ActivityName name = activityName.findFirstByActivityName(a);
+            userActivity.save(new UserActivity(user, name));
         }
 
-        return user;
+        return rootSerializer.serializeOne(
+                "/add-activity/" + activity.getId(),
+                activity,
+                activityNameSerializer);
     }
 
     @RequestMapping(path="/add-availability", method=RequestMethod.POST)
