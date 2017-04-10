@@ -2,11 +2,12 @@ package com.spot.me.entities;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 @Entity
-public class UserAvailability {
-    static private final String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+public class UserAvailability implements HasId{
+    static private final String[] daysOfWeek = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid")
@@ -18,8 +19,11 @@ public class UserAvailability {
     @ManyToOne
     private User user;
 
+    @Transient
+    private List<String> days;
+
     public UserAvailability(User user, String day) {
-        for(String d : days){
+        for(String d : daysOfWeek){
             if(d.equals(day)) {
                 this.user = user;
                 this.day = day;
@@ -55,4 +59,14 @@ public class UserAvailability {
         this.user = user;
     }
 
+
+    public void setDays(List<String> days) {
+        this.days = days;
+    }
+
+    public List<String> getDays() {
+        return days;
+    }
+
 }
+

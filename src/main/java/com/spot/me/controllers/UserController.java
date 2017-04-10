@@ -2,9 +2,7 @@ package com.spot.me.controllers;
 
 import com.spot.me.Parsers.RootParser;
 import com.spot.me.entities.*;
-import com.spot.me.serializers.ActivityNameSerializer;
-import com.spot.me.serializers.RootSerializer;
-import com.spot.me.serializers.UserSerializer;
+import com.spot.me.serializers.*;
 import com.spot.me.services.*;
 import com.spot.me.utilities.JsonUser;
 import com.spot.me.utilities.LoginUser;
@@ -29,16 +27,22 @@ public class UserController {
     private UserAvailabilityRepository userAvailability;
     @Autowired
     private UserAgeRangeRepository userAgeRange;
+    @Autowired
+    private ProfileRepository profiles;
 
     RootSerializer rootSerializer;
     UserSerializer userSerializer;
     ActivityNameSerializer activityNameSerializer;
+    UserAvailabilitySerializer userAvailabilitySerializer;
+    ProfileSerializer profileSerializer;
 
 
     public UserController() {
         rootSerializer = new RootSerializer();
         userSerializer = new UserSerializer();
         activityNameSerializer = new ActivityNameSerializer();
+        userAvailabilitySerializer = new UserAvailabilitySerializer();
+        profileSerializer = new ProfileSerializer();
     }
 
     @PostConstruct
@@ -89,7 +93,7 @@ public class UserController {
                 userSerializer);
     }
 
-    @RequestMapping(path="/add-activity", method=RequestMethod.POST)
+    @RequestMapping(path="/activities", method=RequestMethod.POST)
     public Map<String, Object> addActivity(HttpServletResponse response, @RequestBody RootParser<ActivityName> parser){
         ActivityName activity = parser.getData().getEntity();
         User user = users.findFirstById(activity.getId());
@@ -100,33 +104,49 @@ public class UserController {
         }
 
         return rootSerializer.serializeOne(
-                "/add-activity/" + activity.getId(),
+                "/activities/" + activity.getId(),
                 activity,
                 activityNameSerializer);
     }
 
-    @RequestMapping(path="/add-availability", method=RequestMethod.POST)
-    public String addAvailability(@RequestBody Map<String, Object> body, HttpServletResponse response){
-        User user = users.findFirstByEmail((String)body.get("email"));
-        ArrayList list = (ArrayList) body.get("availability");
-        for(Object s : list) {
-            userAvailability.save(new UserAvailability(user,(String)s));
+    @RequestMapping(path="/availabilities", method=RequestMethod.POST)
+    public Map<String, Object> addAvailability(HttpServletResponse response, @RequestBody RootParser<UserAvailability> parser){
+        UserAvailability availability = parser.getData().getEntity();
+        User user = users.findFirstById(availability.getId());
+
+        // todo: later try to write this in a Functional way!
+        for(String a : availability.getDays()) {
+            userAvailability.save(new UserAvailability(user,a));
         }
-        return "";
+        return rootSerializer.serializeOne(
+                "/availabilities/" + availability.getId(),
+                availability,
+                userAvailabilitySerializer);
     }
 
-//    @RequestMapping(path="/add-zip", method=RequestMethod.POST)
-//    public String addZip(@RequestBody Map<String, Object> body, HttpServletResponse response){
-//        User user = users.findFirstByEmail((String)body.get("email"));
-//        user.setAreaCode((String)body.get("zipcode"));
-//        users.save(user);
-//        return "";
-//    }
+    @RequestMapping(path="/areaCode", method=RequestMethod.POST)
+    public Map<String, Object> addZip(HttpServletResponse response, @RequestBody RootParser<Profile> parser){
+        Profile profile = parser.getData().getEntity();
+        User user = users.findFirstById(profile.getId());
 
-    @RequestMapping(path="/edit-profile")
-    public String updateProfile(@RequestBody Map<String, Object> body, HttpServletResponse response){
+        profiles.save(new Profile(profile.getAreaCode(), user));
 
-        return "";
+        return rootSerializer.serializeOne(
+                "/areaCode/" + profile.getId(),
+                profile,
+                profileSerializer);
+    }
+
+    @RequestMapping(path="/profile")
+    public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser){
+        Profile profile = parser.getData().getEntity();
+        User user = users.findFirstById(profile.getId());
+
+        profiles.save(new Profile(profile.getPhoneNumber(), profile.getAreaCode(), profile.getBio(), profile.getUser()));
+        return rootSerializer.serializeOne(
+                "/areaCode/" + profile.getId(),
+                profile,
+                profileSerializer);
     }
 
 }

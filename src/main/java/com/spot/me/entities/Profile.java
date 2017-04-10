@@ -1,15 +1,12 @@
 package com.spot.me.entities;
 
-
-
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
-
 @Entity
 @Table(name="profile")
-public class Profile {
+public class Profile implements HasId{
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid")
@@ -32,6 +29,18 @@ public class Profile {
 
     @OneToOne
     private User user;
+
+    public Profile(String areaCode, User user) {
+        this.areaCode = areaCode;
+        this.user = user;
+    }
+
+    public Profile(String phoneNumber, String areaCode, String bio, User user) {
+        this.phoneNumber = phoneNumber;
+        this.areaCode = areaCode;
+        this.bio = bio;
+        this.user = user;
+    }
 
     public Profile() {
     }
