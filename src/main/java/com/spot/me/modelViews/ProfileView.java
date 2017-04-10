@@ -1,49 +1,25 @@
-package com.spot.me.entities;
+package com.spot.me.modelViews;
 
-import org.hibernate.annotations.GenericGenerator;
+import javax.persistence.Column;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name="profile")
-public class Profile implements HasId{
-    static final long serialVersionUID = 42L;
-    @Id
-    @GeneratedValue(generator="system-uuid")
-    @GenericGenerator(name="system-uuid", strategy = "uuid")
+/**
+ * Created by BHarris on 4/10/17.
+ */
+public class ProfileView {
     String id;
-
-    @Column
     private String phoneNumber;
-
-    @Column
     private String areaCode;
-
-    @Column(length = 500)
     private String bio;
-
-    @Column
     private double latitude;
-
-    @Column
     private double longitude;
 
-    @OneToOne
-    private User user;
-
-    public Profile(String areaCode, User user) {
-        this.areaCode = areaCode;
-        this.user = user;
-    }
-
-    public Profile(String phoneNumber, String areaCode, String bio, User user) {
+    public ProfileView(String id, String phoneNumber, String areaCode, String bio, double latitude, double longitude) {
+        this.id = id;
         this.phoneNumber = phoneNumber;
         this.areaCode = areaCode;
         this.bio = bio;
-        this.user = user;
-    }
-
-    public Profile() {
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getId() {
@@ -92,13 +68,5 @@ public class Profile implements HasId{
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

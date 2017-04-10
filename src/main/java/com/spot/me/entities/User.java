@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="users")
 public class User implements HasId{
+    static final long serialVersionUID = 42L;
 
     @Id
     @GeneratedValue(generator="system-uuid")

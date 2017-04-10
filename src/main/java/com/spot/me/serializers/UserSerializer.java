@@ -18,9 +18,9 @@ public class UserSerializer extends JsonDataSerializer {
         Map<String, Object> result = new HashMap<>();
         User user = (User) entity;
 
+        result.put("id", user.getId());
         result.put("email", user.getEmail());
         result.put("name", user.getName());
-        result.put("password", user.getPassword());
 
         return result;
     }
@@ -28,4 +28,6 @@ public class UserSerializer extends JsonDataSerializer {
     public Map<String, String> getRelationshipUrls() {
         return new HashMap<String, String>();
     }
+
+
 }

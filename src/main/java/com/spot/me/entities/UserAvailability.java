@@ -7,6 +7,7 @@ import java.util.List;
 
 @Entity
 public class UserAvailability implements HasId{
+    static final long serialVersionUID = 42L;
     static private final String[] daysOfWeek = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     @Id
     @GeneratedValue(generator="system-uuid")

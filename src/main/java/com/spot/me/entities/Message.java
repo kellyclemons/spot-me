@@ -6,6 +6,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="messages")
 public class Message {
+    static final long serialVersionUID = 42L;
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid")

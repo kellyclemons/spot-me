@@ -4,14 +4,11 @@ import com.spot.me.Parsers.RootParser;
 import com.spot.me.entities.*;
 import com.spot.me.serializers.*;
 import com.spot.me.services.*;
-import com.spot.me.utilities.JsonUser;
-import com.spot.me.utilities.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.Map;
 
 @CrossOrigin
@@ -76,7 +73,7 @@ public class UserController {
                 userSerializer);
     }
 
-    @RequestMapping(path="/register", method=RequestMethod.POST)
+    @RequestMapping(path="/users", method=RequestMethod.POST)
     public Map<String, Object> register(HttpServletResponse response, @RequestBody RootParser<User> parser) throws Exception {
         User user = parser.getData().getEntity();
         User existingUser = users.findFirstByEmail(user.getEmail());
@@ -137,7 +134,7 @@ public class UserController {
                 profileSerializer);
     }
 
-    @RequestMapping(path="/profile")
+    @RequestMapping(path="/profile", method = RequestMethod.POST)
     public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser){
         Profile profile = parser.getData().getEntity();
         User user = users.findFirstById(profile.getId());
@@ -147,6 +144,20 @@ public class UserController {
                 "/areaCode/" + profile.getId(),
                 profile,
                 profileSerializer);
+    }
+
+    @RequestMapping(path = "/profile/{id}", method = RequestMethod.GET)
+    public Map<String, Object> findOneProfile(@PathVariable("id") String id) {
+
+        Profile profile = profiles.findFirstByUserId(id);
+        return rootSerializer.serializeOne("/profile/" + profile.getId(), profile, profileSerializer);
+    }
+
+    @RequestMapping(path="/users/{areaCode}")
+    public Map<String, Object> findAllProfileInAreaCode(@PathVariable("areaCode") String areaCode){
+        Iterable<Profile> usersInArea =  profiles.findByAreaCode(areaCode);
+
+        return rootSerializer.serializeMany("/profile/", usersInArea, profileSerializer);
     }
 
 }

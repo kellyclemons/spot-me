@@ -8,6 +8,7 @@ import java.util.Collection;
 @Entity
 @Table(name="userActivities")
 public class UserActivity {
+    static final long serialVersionUID = 42L;
 
     @Id
     @GeneratedValue(generator="system-uuid")

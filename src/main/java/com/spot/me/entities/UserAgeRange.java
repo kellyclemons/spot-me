@@ -7,6 +7,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="userAgeRange")
 public class UserAgeRange {
+    static final long serialVersionUID = 42L;
     static private final String[] range = {"18-24", "25-34", "35-44", "45-54", "55-64", "over 65"};
 
     @Id
