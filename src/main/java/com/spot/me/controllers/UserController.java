@@ -2,6 +2,7 @@ package com.spot.me.controllers;
 
 import com.spot.me.Parsers.RootParser;
 import com.spot.me.entities.*;
+import com.spot.me.modelViews.ProfileView;
 import com.spot.me.serializers.*;
 import com.spot.me.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -140,6 +143,7 @@ public class UserController {
         User user = users.findFirstById(profile.getId());
 
         profiles.save(new Profile(profile.getPhoneNumber(), profile.getAreaCode(), profile.getBio(), profile.getUser()));
+
         return rootSerializer.serializeOne(
                 "/areaCode/" + profile.getId(),
                 profile,
@@ -150,7 +154,19 @@ public class UserController {
     public Map<String, Object> findOneProfile(@PathVariable("id") String id) {
 
         Profile profile = profiles.findFirstByUserId(id);
-        return rootSerializer.serializeOne("/profile/" + profile.getId(), profile, profileSerializer);
+        List<UserAvailability> availabilityDays = userAvailability.findDayByUserId(id);
+        List<String> aDays = new ArrayList<>();
+        for (UserAvailability x : availabilityDays){
+            System.out.println(x);
+            aDays.add(x.getDay());
+        }
+        System.out.println(aDays.toString());
+        List<UserActivity> favoriteAcivities = userActivity.findAllByUserId(id);
+        ProfileView p = new ProfileView(profile.getId(), profile.getPhoneNumber(),profile.getAreaCode(),profile.getBio(),profile.getLatitude(),profile.getLongitude(),favoriteAcivities, availabilityDays);
+        return rootSerializer.serializeOne(
+                "/profile/" + profile.getId(),
+                p,
+                profileSerializer);
     }
 
     @RequestMapping(path="/users/{areaCode}")
