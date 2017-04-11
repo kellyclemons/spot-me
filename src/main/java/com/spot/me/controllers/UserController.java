@@ -188,17 +188,19 @@ public class UserController {
         return rootSerializer.serializeMany("/profile/", allUsers, profileSerializer);
     }
 
-    @RequestMapping(path="/users/{areaCode}/{query}")
-    public Map<String, Object> findAllProfileInAreaCode(@PathVariable("areaCode") String areaCode, @PathVariable("query") List<String> query) {
-        List<ProfileView> allUsers = new ArrayList<>();
-        List<String> profileIdInArea = filterData(query, areaCode);
-
-        for(String s : profileIdInArea) {
-            Profile userProfiles = profiles.findFirstByUserId(s);
-            allUsers.add(createProfile(userProfiles));
+    @RequestMapping(path="/users", method=RequestMethod.GET)
+    public Map<String, Object> findAllProfileInAreaCode(@RequestParam(value="filter[zip]") String areaCode, @RequestParam(value="filter[activity]") List<String> filter) {
+        List<ProfileView> usersWithInterest = new ArrayList<>();
+        List<Profile> usersInArea =  profiles.findByAreaCode(areaCode);
+        for(Profile p : usersInArea) {
+            ProfileView profile = createProfile(p);
+            System.out.println(p.getUser().getName() + "=" +profile.getActivities());
+            if(profile.getActivities().containsAll(filter)){
+                usersWithInterest.add(profile);
+            }
         }
 
-        return rootSerializer.serializeMany("/profile/", allUsers, profileSerializer);
+        return rootSerializer.serializeMany("/profile/", usersWithInterest, profileSerializer);
 
     }
 
@@ -220,37 +222,6 @@ public class UserController {
             ProfileView profile = new ProfileView(userId, p.getPhoneNumber(),p.getAreaCode(),p.getBio(),p.getLatitude(),p.getLongitude(),activites, aDays, user.getName(), user.getEmail());
             return profile;
 
-    }
-
-    public List<String> filterData(List<String> query, String areaCode){
-        List<String> ids = new ArrayList<>();
-        switch(query.size()){
-            case 1:
-                userActivity.findUserByName_NameAndUser_Profile_AreaCode(query.get(0), areaCode);
-//                return buildProfileId(userActivity.findByAreaCodeAndOneFilter(query.get(0), areaCode));
-//
-//            case 2:
-//                //return buildProfileId(profiles.findByAreaCodeAndTwoFilter(query.get(0), query.get(1), areaCode));
-//
-//            case 3:
-//                return buildProfileId(profiles.findByAreaCodeAndThreeFilter(query.get(0), query.get(1), query.get(2), areaCode));
-//
-//            case 4:
-//                return buildProfileId(profiles.findByAreaCodeAndFourFilter(query.get(0), query.get(1), query.get(2), query.get(3), areaCode));
-
-            default:
-                break;
-        }
-        return null;
-    }
-
-    public List<String> buildProfileId(List<String> userids){
-        List<String> ids = new ArrayList<>();
-        for (String id : userids) {
-            ids.add(id);
-        }
-
-        return ids;
     }
 
 }
