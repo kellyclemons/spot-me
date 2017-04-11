@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import java.util.List;
 
 @Entity
-@Table(name="activityName")
+@Table(name="activities")
 public class ActivityName implements HasId{
     static final long serialVersionUID = 42L;
     @Id

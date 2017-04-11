@@ -5,7 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Entity
-@Table(name="profile")
+@Table(name="profiles")
 public class Profile implements HasId{
     static final long serialVersionUID = 42L;
     @Id

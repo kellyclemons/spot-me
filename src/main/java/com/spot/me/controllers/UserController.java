@@ -180,6 +180,29 @@ public class UserController {
         Iterable<Profile> usersInArea =  profiles.findByAreaCode(areaCode);
 
         for(Profile p : usersInArea) {
+            allUsers.add(createProfile(p));
+        }
+
+
+        return rootSerializer.serializeMany("/profile/", allUsers, profileSerializer);
+    }
+
+    @RequestMapping(path="/users/{areaCode}/{query}")
+    public Map<String, Object> findAllProfileInAreaCode(@PathVariable("areaCode") String areaCode, @PathVariable("query") List<String> query) {
+        List<ProfileView> allUsers = new ArrayList<>();
+        List<Profile> usersInArea = filterData(query);
+
+
+        for(Profile p : usersInArea) {
+            allUsers.add(createProfile(p));
+        }
+
+        return rootSerializer.serializeMany("/profile/", allUsers, profileSerializer);
+
+    }
+
+    public ProfileView createProfile(Profile p ){
+
             String userId = p.getUser().getId();
             List<UserAvailability> availabilityDays = userAvailability.findDayByUserId(p.getUser().getId());
             List<String> aDays = new ArrayList<>();
@@ -193,15 +216,25 @@ public class UserController {
                 activites.add(x.getActivityName().getActivityName());
             }
             ProfileView profile = new ProfileView(userId, p.getPhoneNumber(),p.getAreaCode(),p.getBio(),p.getLatitude(),p.getLongitude(),activites, aDays);
-            allUsers.add(profile);
-        }
+            return profile;
 
-        return rootSerializer.serializeMany("/profile/", allUsers, profileSerializer);
     }
 
-//    @RequestMapping(path="/users/{areaCode}/{query}")
-//    public Map<String, Object> findAllProfileInAreaCode(@PathVariable("areaCode") String areaCode, @PathVariable("query") List<String> query) {
-//
-//    }
+    public List<Profile> filterData(List<String> query){
+        List<Profile> filteredProfiles = new ArrayList<>();
+        switch(query.size()){
+            case 1: filteredProfiles.add(profiles.findByAreaCodeAndOneFilter(query.get(0)));
+                break;
+            case 2: filteredProfiles.add(profiles.findByAreaCodeAndTwoFilter(query.get(0), query.get(1)));
+                break;
+            case 3: filteredProfiles.add(profiles.findByAreaCodeAndThreeFilter(query.get(0), query.get(1), query.get(2)));
+                break;
+            case 4: filteredProfiles.add(profiles.findByAreaCodeAndFourFilter(query.get(0), query.get(1), query.get(2), query.get(3)));
+                break;
+            default:
+                break;
+        }
+        return filteredProfiles;
+    }
 
 }
