@@ -176,9 +176,32 @@ public class UserController {
 
     @RequestMapping(path="/users/{areaCode}")
     public Map<String, Object> findAllProfileInAreaCode(@PathVariable("areaCode") String areaCode){
+        List<ProfileView> allUsers = new ArrayList<>();
         Iterable<Profile> usersInArea =  profiles.findByAreaCode(areaCode);
 
-        return rootSerializer.serializeMany("/profile/", usersInArea, profileSerializer);
+        for(Profile p : usersInArea) {
+            String userId = p.getUser().getId();
+            List<UserAvailability> availabilityDays = userAvailability.findDayByUserId(p.getUser().getId());
+            List<String> aDays = new ArrayList<>();
+            for (UserAvailability x : availabilityDays){
+                aDays.add(x.getDay());
+            }
+
+            List<UserActivity> favoriteActivities = userActivity.findAllByUserId(p.getUser().getId());
+            List<String> activites = new ArrayList<>();
+            for (UserActivity x : favoriteActivities){
+                activites.add(x.getActivityName().getActivityName());
+            }
+            ProfileView profile = new ProfileView(userId, p.getPhoneNumber(),p.getAreaCode(),p.getBio(),p.getLatitude(),p.getLongitude(),activites, aDays);
+            allUsers.add(profile);
+        }
+
+        return rootSerializer.serializeMany("/profile/", allUsers, profileSerializer);
     }
+
+//    @RequestMapping(path="/users/{areaCode}/{query}")
+//    public Map<String, Object> findAllProfileInAreaCode(@PathVariable("areaCode") String areaCode, @PathVariable("query") List<String> query) {
+//
+//    }
 
 }
