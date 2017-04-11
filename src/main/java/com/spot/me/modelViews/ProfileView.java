@@ -1,5 +1,6 @@
 package com.spot.me.modelViews;
 
+import com.spot.me.entities.ActivityName;
 import com.spot.me.entities.HasId;
 import com.spot.me.entities.UserActivity;
 import com.spot.me.entities.UserAvailability;
@@ -17,10 +18,10 @@ public class ProfileView implements HasId{
     private String bio;
     private double latitude;
     private double longitude;
-    private List<UserActivity> activities;
-    private List<UserAvailability> availability;
+    private List<String> activities;
+    private List<String> availability;
 
-    public ProfileView(String id, String phoneNumber, String areaCode, String bio, double latitude, double longitude, List<UserActivity> activities, List<UserAvailability> availability) {
+    public ProfileView(String id, String phoneNumber, String areaCode, String bio, double latitude, double longitude, List<String> activities, List<String> availability) {
         this.id = id;
         this.phoneNumber = phoneNumber;
         this.areaCode = areaCode;
@@ -29,6 +30,9 @@ public class ProfileView implements HasId{
         this.longitude = longitude;
         this.activities = activities;
         this.availability = availability;
+    }
+
+    public ProfileView() {
     }
 
     public String getId() {
@@ -79,19 +83,19 @@ public class ProfileView implements HasId{
         this.longitude = longitude;
     }
 
-    public List<UserActivity> getActivities() {
+    public List<String> getActivities() {
         return activities;
     }
 
-    public void setActivities(List<UserActivity> activities) {
+    public void setActivities(List<String> activities) {
         this.activities = activities;
     }
 
-    public List<UserAvailability> getAvailability() {
+    public List<String> getAvailability() {
         return availability;
     }
 
-    public void setAvailability(List<UserAvailability> availability) {
+    public void setAvailability(List<String> availability) {
         this.availability = availability;
     }
 }

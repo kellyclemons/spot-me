@@ -4,6 +4,7 @@ import com.spot.me.Parsers.RootParser;
 import com.spot.me.entities.*;
 import com.spot.me.modelViews.ProfileView;
 import com.spot.me.serializers.*;
+import com.spot.me.serializers.AreaCodeSerializer;
 import com.spot.me.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,7 @@ public class UserController {
     ActivityNameSerializer activityNameSerializer;
     UserAvailabilitySerializer userAvailabilitySerializer;
     ProfileSerializer profileSerializer;
+    AreaCodeSerializer areaCodeSerializer;
 
 
     public UserController() {
@@ -43,6 +45,7 @@ public class UserController {
         activityNameSerializer = new ActivityNameSerializer();
         userAvailabilitySerializer = new UserAvailabilitySerializer();
         profileSerializer = new ProfileSerializer();
+        areaCodeSerializer = new AreaCodeSerializer();
     }
 
     @PostConstruct
@@ -114,7 +117,6 @@ public class UserController {
         UserAvailability availability = parser.getData().getEntity();
         User user = users.findFirstById(availability.getId());
 
-        // todo: later try to write this in a Functional way!
         for(String a : availability.getDays()) {
             userAvailability.save(new UserAvailability(user,a));
         }
@@ -134,7 +136,7 @@ public class UserController {
         return rootSerializer.serializeOne(
                 "/areaCode/" + profile.getId(),
                 profile,
-                profileSerializer);
+                areaCodeSerializer);
     }
 
     @RequestMapping(path="/profile", method = RequestMethod.POST)
@@ -157,14 +159,17 @@ public class UserController {
         List<UserAvailability> availabilityDays = userAvailability.findDayByUserId(id);
         List<String> aDays = new ArrayList<>();
         for (UserAvailability x : availabilityDays){
-            System.out.println(x);
             aDays.add(x.getDay());
         }
-        System.out.println(aDays.toString());
-        List<UserActivity> favoriteAcivities = userActivity.findAllByUserId(id);
-        ProfileView p = new ProfileView(profile.getId(), profile.getPhoneNumber(),profile.getAreaCode(),profile.getBio(),profile.getLatitude(),profile.getLongitude(),favoriteAcivities, availabilityDays);
+
+        List<UserActivity> favoriteActivities = userActivity.findAllByUserId(id);
+        List<String> activites = new ArrayList<>();
+        for (UserActivity x : favoriteActivities){
+            activites.add(x.getActivityName().getActivityName());
+        }
+        ProfileView p = new ProfileView(id, profile.getPhoneNumber(),profile.getAreaCode(),profile.getBio(),profile.getLatitude(),profile.getLongitude(),activites, aDays);
         return rootSerializer.serializeOne(
-                "/profile/" + profile.getId(),
+                "/profile/" + p.getId(),
                 p,
                 profileSerializer);
     }
