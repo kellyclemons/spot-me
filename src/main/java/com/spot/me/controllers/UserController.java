@@ -167,7 +167,8 @@ public class UserController {
         for (UserActivity x : favoriteActivities){
             activites.add(x.getActivityName().getActivityName());
         }
-        ProfileView p = new ProfileView(id, profile.getPhoneNumber(),profile.getAreaCode(),profile.getBio(),profile.getLatitude(),profile.getLongitude(),activites, aDays);
+        User user = users.findFirstById(id);
+        ProfileView p = new ProfileView(id, profile.getPhoneNumber(),profile.getAreaCode(),profile.getBio(),profile.getLatitude(),profile.getLongitude(),activites, aDays, user.getName(), user.getEmail());
         return rootSerializer.serializeOne(
                 "/profile/" + p.getId(),
                 p,
@@ -190,11 +191,11 @@ public class UserController {
     @RequestMapping(path="/users/{areaCode}/{query}")
     public Map<String, Object> findAllProfileInAreaCode(@PathVariable("areaCode") String areaCode, @PathVariable("query") List<String> query) {
         List<ProfileView> allUsers = new ArrayList<>();
-        List<Profile> usersInArea = filterData(query);
+        List<String> profileIdInArea = filterData(query, areaCode);
 
-
-        for(Profile p : usersInArea) {
-            allUsers.add(createProfile(p));
+        for(String s : profileIdInArea) {
+            Profile userProfiles = profiles.findFirstByUserId(s);
+            allUsers.add(createProfile(userProfiles));
         }
 
         return rootSerializer.serializeMany("/profile/", allUsers, profileSerializer);
@@ -204,6 +205,7 @@ public class UserController {
     public ProfileView createProfile(Profile p ){
 
             String userId = p.getUser().getId();
+            User user = users.findFirstById(userId);
             List<UserAvailability> availabilityDays = userAvailability.findDayByUserId(p.getUser().getId());
             List<String> aDays = new ArrayList<>();
             for (UserAvailability x : availabilityDays){
@@ -215,26 +217,40 @@ public class UserController {
             for (UserActivity x : favoriteActivities){
                 activites.add(x.getActivityName().getActivityName());
             }
-            ProfileView profile = new ProfileView(userId, p.getPhoneNumber(),p.getAreaCode(),p.getBio(),p.getLatitude(),p.getLongitude(),activites, aDays);
+            ProfileView profile = new ProfileView(userId, p.getPhoneNumber(),p.getAreaCode(),p.getBio(),p.getLatitude(),p.getLongitude(),activites, aDays, user.getName(), user.getEmail());
             return profile;
 
     }
 
-    public List<Profile> filterData(List<String> query){
-        List<Profile> filteredProfiles = new ArrayList<>();
+    public List<String> filterData(List<String> query, String areaCode){
+        List<String> ids = new ArrayList<>();
         switch(query.size()){
-            case 1: filteredProfiles.add(profiles.findByAreaCodeAndOneFilter(query.get(0)));
-                break;
-            case 2: filteredProfiles.add(profiles.findByAreaCodeAndTwoFilter(query.get(0), query.get(1)));
-                break;
-            case 3: filteredProfiles.add(profiles.findByAreaCodeAndThreeFilter(query.get(0), query.get(1), query.get(2)));
-                break;
-            case 4: filteredProfiles.add(profiles.findByAreaCodeAndFourFilter(query.get(0), query.get(1), query.get(2), query.get(3)));
-                break;
+            case 1:
+                userActivity.findUserByName_NameAndUser_Profile_AreaCode(query.get(0), areaCode);
+//                return buildProfileId(userActivity.findByAreaCodeAndOneFilter(query.get(0), areaCode));
+//
+//            case 2:
+//                //return buildProfileId(profiles.findByAreaCodeAndTwoFilter(query.get(0), query.get(1), areaCode));
+//
+//            case 3:
+//                return buildProfileId(profiles.findByAreaCodeAndThreeFilter(query.get(0), query.get(1), query.get(2), areaCode));
+//
+//            case 4:
+//                return buildProfileId(profiles.findByAreaCodeAndFourFilter(query.get(0), query.get(1), query.get(2), query.get(3), areaCode));
+
             default:
                 break;
         }
-        return filteredProfiles;
+        return null;
+    }
+
+    public List<String> buildProfileId(List<String> userids){
+        List<String> ids = new ArrayList<>();
+        for (String id : userids) {
+            ids.add(id);
+        }
+
+        return ids;
     }
 
 }

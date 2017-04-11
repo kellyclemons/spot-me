@@ -19,14 +19,14 @@ public class UserActivity {
     private User user;
 
     @ManyToOne
-    private ActivityName activityName;
+    private ActivityName name;
 
     public UserActivity() {
     }
 
-    public UserActivity(User user, ActivityName activityName){
+    public UserActivity(User user, ActivityName name){
         this.user = user;
-        this.activityName = activityName;
+        this.name = name;
     }
 
     public String getId() {
@@ -46,10 +46,10 @@ public class UserActivity {
     }
 
     public ActivityName getActivityName() {
-        return activityName;
+        return name;
     }
 
     public void setActivityName(ActivityName activityName) {
-        this.activityName = activityName;
+        this.name = activityName;
     }
 }

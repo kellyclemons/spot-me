@@ -20,7 +20,8 @@ public class ProfileSerializer extends JsonDataSerializer {
     public Map<String, Object> getAttributes(HasId entity) {
         Map<String, Object> result = new HashMap<>();
         ProfileView profile = (ProfileView) entity;
-
+        result.put("name", profile.getName());
+        result.put("email", profile.getEmail());
         result.put("id", profile.getId());
         result.put("phoneNumber", profile.getPhoneNumber());
         result.put("areaCode", profile.getAreaCode());

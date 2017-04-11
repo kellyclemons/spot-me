@@ -13,6 +13,7 @@ import java.util.List;
 @Table(name="activities")
 public class ActivityName implements HasId{
     static final long serialVersionUID = 42L;
+
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid")

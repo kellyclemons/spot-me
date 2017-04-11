@@ -13,6 +13,11 @@ import java.util.List;
  */
 public class ProfileView implements HasId{
     String id;
+
+    //new
+    private String name;
+    private String email;
+
     private String phoneNumber;
     private String areaCode;
     private String bio;
@@ -21,7 +26,7 @@ public class ProfileView implements HasId{
     private List<String> activities;
     private List<String> availability;
 
-    public ProfileView(String id, String phoneNumber, String areaCode, String bio, double latitude, double longitude, List<String> activities, List<String> availability) {
+    public ProfileView(String id, String phoneNumber, String areaCode, String bio, double latitude, double longitude, List<String> activities, List<String> availability, String name, String email) {
         this.id = id;
         this.phoneNumber = phoneNumber;
         this.areaCode = areaCode;
@@ -30,6 +35,9 @@ public class ProfileView implements HasId{
         this.longitude = longitude;
         this.activities = activities;
         this.availability = availability;
+
+        this.name = name;
+        this.email = email;
     }
 
     public ProfileView() {
@@ -97,5 +105,22 @@ public class ProfileView implements HasId{
 
     public void setAvailability(List<String> availability) {
         this.availability = availability;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
