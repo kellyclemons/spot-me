@@ -165,10 +165,16 @@ public class UserController {
 
         if(profile.getActivityNames() != null) {
             userActivity.removeUserActivitiesById(user.getId());
+            for (String a : profile.getActivityNames()) {
+                ActivityName name = activityName.findFirstByActivityName(a);
+                userActivity.save(new UserActivity(user, name));
+            }
         }
-        for (String a : profile.getActivityNames()) {
-            ActivityName name = activityName.findFirstByActivityName(a);
-            userActivity.save(new UserActivity(user, name));
+        if(profile.getDaysAvailable() != null) {
+            userAvailability.removeUserAvailabilitiesById(user.getId());
+            for(String a : profile.getDaysAvailable()) {
+                userAvailability.save(new UserAvailability(user,a));
+            }
         }
 
         ProfileView profileView =createProfile(p);
@@ -202,7 +208,8 @@ public class UserController {
     }
 
     @RequestMapping(path="/users", method=RequestMethod.GET)
-    public Map<String, Object> findAllProfileInZipCodeWithFilter(@RequestParam(value="filter[zip]", required = false) String zipCode, @RequestParam(value="filter[activity]", required = false) List<String> filter) {
+    public Map<String, Object> findAllProfileInZipCodeWithFilter(@RequestParam(value="filter[zip]", required = false) String zipCode,
+                                                                 @RequestParam(value="filter[activity]", required = false) List<String> filter) {
         List<ProfileView> usersWithInterest = new ArrayList<>();
         List<Profile> usersInArea =  profiles.findByZipCode(zipCode);
         if(zipCode.equals("")){

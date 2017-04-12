@@ -38,6 +38,9 @@ public class Profile implements HasId{
     @Transient
     List<String> activityNames;
 
+    @Transient
+    List<String> daysAvailable;
+
     public Profile(String zipCode, User user) {
         this.zipCode = zipCode;
         this.user = user;
@@ -123,5 +126,13 @@ public class Profile implements HasId{
 
     public void setActivityNames(List<String> activityNames) {
         this.activityNames = activityNames;
+    }
+
+    public List<String> getDaysAvailable() {
+        return daysAvailable;
+    }
+
+    public void setDaysAvailable(List<String> daysAvailable) {
+        this.daysAvailable = daysAvailable;
     }
 }

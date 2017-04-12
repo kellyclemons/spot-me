@@ -19,6 +19,6 @@ public interface UserActivityRepository extends CrudRepository<UserActivity, Str
     @Modifying
     @Transactional
     @Query("delete from UserActivity u where u.user.id = ?1")
-    void removeUserActivitiesById(String firstName);
+    void removeUserActivitiesById(String id);
 
 }
