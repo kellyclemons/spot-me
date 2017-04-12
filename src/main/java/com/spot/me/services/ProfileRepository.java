@@ -10,6 +10,6 @@ import java.util.List;
 public interface ProfileRepository extends CrudRepository<Profile, String> {
     Profile findFirstByUserId(String id);
 
-    List<Profile> findByAreaCode(String areaCode);
+    List<Profile> findByZipCode(String zipCode);
 
 }

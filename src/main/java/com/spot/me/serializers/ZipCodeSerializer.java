@@ -9,7 +9,7 @@ import java.util.Map;
 
 
 
-public class AreaCodeSerializer extends JsonDataSerializer {
+public class ZipCodeSerializer extends JsonDataSerializer {
 
     public String getType() {
         return "users";
@@ -20,7 +20,7 @@ public class AreaCodeSerializer extends JsonDataSerializer {
         Profile profile = (Profile) entity;
 
         result.put("id", profile.getId());
-        result.put("areaCode", profile.getAreaCode());
+        result.put("zipCode", profile.getZipCode());
 
         return result;
     }

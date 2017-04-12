@@ -19,17 +19,17 @@ public class ProfileView implements HasId{
     private String email;
 
     private String phoneNumber;
-    private String areaCode;
+    private String zipCode;
     private String bio;
     private double latitude;
     private double longitude;
     private List<String> activities;
     private List<String> availability;
 
-    public ProfileView(String id, String phoneNumber, String areaCode, String bio, double latitude, double longitude, List<String> activities, List<String> availability, String name, String email) {
+    public ProfileView(String id, String phoneNumber, String zipCode, String bio, double latitude, double longitude, List<String> activities, List<String> availability, String name, String email) {
         this.id = id;
         this.phoneNumber = phoneNumber;
-        this.areaCode = areaCode;
+        this.zipCode = zipCode;
         this.bio = bio;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -59,12 +59,12 @@ public class ProfileView implements HasId{
         this.phoneNumber = phoneNumber;
     }
 
-    public String getAreaCode() {
-        return areaCode;
+    public String getZipCode() {
+        return zipCode;
     }
 
-    public void setAreaCode(String areaCode) {
-        this.areaCode = areaCode;
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
     public String getBio() {
@@ -106,7 +106,6 @@ public class ProfileView implements HasId{
     public void setAvailability(List<String> availability) {
         this.availability = availability;
     }
-
 
     public String getName() {
         return name;

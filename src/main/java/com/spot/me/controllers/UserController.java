@@ -4,7 +4,7 @@ import com.spot.me.Parsers.RootParser;
 import com.spot.me.entities.*;
 import com.spot.me.modelViews.ProfileView;
 import com.spot.me.serializers.*;
-import com.spot.me.serializers.AreaCodeSerializer;
+import com.spot.me.serializers.ZipCodeSerializer;
 import com.spot.me.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +36,7 @@ public class UserController {
     ActivityNameSerializer activityNameSerializer;
     UserAvailabilitySerializer userAvailabilitySerializer;
     ProfileSerializer profileSerializer;
-    AreaCodeSerializer areaCodeSerializer;
+    ZipCodeSerializer zipCodeSerializer;
 
 
     public UserController() {
@@ -45,17 +45,22 @@ public class UserController {
         activityNameSerializer = new ActivityNameSerializer();
         userAvailabilitySerializer = new UserAvailabilitySerializer();
         profileSerializer = new ProfileSerializer();
-        areaCodeSerializer = new AreaCodeSerializer();
+        zipCodeSerializer = new ZipCodeSerializer();
     }
 
     @PostConstruct
     public void init() {
         if(activityName.count() == 0) {
             String[] activities = {
-                    "Tennis",
                     "Running",
+                    "Hiking",
+                    "Cycling",
+                    "Swimming",
+                    "Tennis",
+                    "Yoga",
                     "Lifting",
-                    "Walking"
+                    "Golf",
+                    "Boxing"
             };
 
             for (String a : activities) {
@@ -63,7 +68,7 @@ public class UserController {
             }
         }
     }
-
+    //Login
     @RequestMapping(path="/login", method=RequestMethod.POST)
     public Map<String, Object> login(HttpServletResponse response, @RequestBody RootParser<User> parser) throws Exception {
         User user = parser.getData().getEntity();
@@ -78,7 +83,7 @@ public class UserController {
                 existingUser,
                 userSerializer);
     }
-
+    //Register
     @RequestMapping(path="/users", method=RequestMethod.POST)
     public Map<String, Object> register(HttpServletResponse response, @RequestBody RootParser<User> parser) throws Exception {
         User user = parser.getData().getEntity();
@@ -126,29 +131,50 @@ public class UserController {
                 userAvailabilitySerializer);
     }
 
-    @RequestMapping(path="/areaCode", method=RequestMethod.POST)
+    @RequestMapping(path="/zipCode", method=RequestMethod.POST)
     public Map<String, Object> addZip(HttpServletResponse response, @RequestBody RootParser<Profile> parser){
         Profile profile = parser.getData().getEntity();
         User user = users.findFirstById(profile.getId());
 
-        profiles.save(new Profile(profile.getAreaCode(), user));
+        profiles.save(new Profile(profile.getZipCode(), user));
 
         return rootSerializer.serializeOne(
-                "/areaCode/" + profile.getId(),
+                "/zipCode/" + profile.getId(),
                 profile,
-                areaCodeSerializer);
+                zipCodeSerializer);
     }
 
-    @RequestMapping(path="/profile", method = RequestMethod.POST)
+    @RequestMapping(path="/profile", method = RequestMethod.PATCH)
     public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser){
         Profile profile = parser.getData().getEntity();
         User user = users.findFirstById(profile.getId());
+        Profile p = profiles.findFirstByUserId(user.getId());
+        if(profile.getZipCode() != null) {
+            p.setZipCode(profile.getZipCode());
+        }
+        if(profile.getBio() != null) {
+            p.setBio(profile.getBio());
+        }
+        if(profile.getPhoneNumber() != null) {
+            p.setPhoneNumber(profile.getPhoneNumber());
+        }
+        if(profile.getGender() != null) {
+            p.setGender(profile.getGender());
+        }
+        profiles.save(p);
 
-        profiles.save(new Profile(profile.getPhoneNumber(), profile.getAreaCode(), profile.getBio(), profile.getUser()));
+        if(profile.getActivityNames() != null) {
+            userActivity.removeUserActivitiesById(user.getId());
+        }
+        for (String a : profile.getActivityNames()) {
+            ActivityName name = activityName.findFirstByActivityName(a);
+            userActivity.save(new UserActivity(user, name));
+        }
 
+        ProfileView profileView =createProfile(p);
         return rootSerializer.serializeOne(
-                "/areaCode/" + profile.getId(),
-                profile,
+                "/profile/" + profile.getId(),
+                profileView,
                 profileSerializer);
     }
 
@@ -168,40 +194,34 @@ public class UserController {
             activites.add(x.getActivityName().getActivityName());
         }
         User user = users.findFirstById(id);
-        ProfileView p = new ProfileView(id, profile.getPhoneNumber(),profile.getAreaCode(),profile.getBio(),profile.getLatitude(),profile.getLongitude(),activites, aDays, user.getName(), user.getEmail());
+        ProfileView p = new ProfileView(id, profile.getPhoneNumber(),profile.getZipCode(),profile.getBio(),profile.getLatitude(),profile.getLongitude(),activites, aDays, user.getName(), user.getEmail());
         return rootSerializer.serializeOne(
                 "/profile/" + p.getId(),
                 p,
                 profileSerializer);
     }
 
-    @RequestMapping(path="/users/{areaCode}")
-    public Map<String, Object> findAllProfileInAreaCode(@PathVariable("areaCode") String areaCode){
-        List<ProfileView> allUsers = new ArrayList<>();
-        Iterable<Profile> usersInArea =  profiles.findByAreaCode(areaCode);
-
-        for(Profile p : usersInArea) {
-            allUsers.add(createProfile(p));
-        }
-
-
-        return rootSerializer.serializeMany("/profile/", allUsers, profileSerializer);
-    }
-
     @RequestMapping(path="/users", method=RequestMethod.GET)
-    public Map<String, Object> findAllProfileInAreaCode(@RequestParam(value="filter[zip]") String areaCode, @RequestParam(value="filter[activity]") List<String> filter) {
+    public Map<String, Object> findAllProfileInZipCodeWithFilter(@RequestParam(value="filter[zip]", required = false) String zipCode, @RequestParam(value="filter[activity]", required = false) List<String> filter) {
         List<ProfileView> usersWithInterest = new ArrayList<>();
-        List<Profile> usersInArea =  profiles.findByAreaCode(areaCode);
-        for(Profile p : usersInArea) {
-            ProfileView profile = createProfile(p);
-            System.out.println(p.getUser().getName() + "=" +profile.getActivities());
-            if(profile.getActivities().containsAll(filter)){
-                usersWithInterest.add(profile);
+        List<Profile> usersInArea =  profiles.findByZipCode(zipCode);
+        if(zipCode.equals("")){
+            zipCode="37243";
+        }
+        if(filter == null || filter.size() <= 0 ){
+            for( Profile p : usersInArea) {
+                usersWithInterest.add(createProfile(p));
+            }
+        }else {
+            for (Profile p : usersInArea) {
+                ProfileView profile = createProfile(p);
+                if (profile.getActivities().containsAll(filter)) {
+                    usersWithInterest.add(profile);
+                }
             }
         }
 
         return rootSerializer.serializeMany("/profile/", usersWithInterest, profileSerializer);
-
     }
 
     public ProfileView createProfile(Profile p ){
@@ -219,9 +239,8 @@ public class UserController {
             for (UserActivity x : favoriteActivities){
                 activites.add(x.getActivityName().getActivityName());
             }
-            ProfileView profile = new ProfileView(userId, p.getPhoneNumber(),p.getAreaCode(),p.getBio(),p.getLatitude(),p.getLongitude(),activites, aDays, user.getName(), user.getEmail());
+            ProfileView profile = new ProfileView(userId, p.getPhoneNumber(),p.getZipCode(),p.getBio(),p.getLatitude(),p.getLongitude(),activites, aDays, user.getName(), user.getEmail());
             return profile;
-
     }
 
 }

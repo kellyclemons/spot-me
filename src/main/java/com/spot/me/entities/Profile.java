@@ -3,6 +3,7 @@ package com.spot.me.entities;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="profiles")
@@ -17,7 +18,7 @@ public class Profile implements HasId{
     private String phoneNumber;
 
     @Column
-    private String areaCode;
+    private String zipCode;
 
     @Column(length = 500)
     private String bio;
@@ -28,17 +29,23 @@ public class Profile implements HasId{
     @Column
     private double longitude;
 
+    @Column
+    private String gender;
+
     @OneToOne
     private User user;
 
-    public Profile(String areaCode, User user) {
-        this.areaCode = areaCode;
+    @Transient
+    List<String> activityNames;
+
+    public Profile(String zipCode, User user) {
+        this.zipCode = zipCode;
         this.user = user;
     }
 
-    public Profile(String phoneNumber, String areaCode, String bio, User user) {
+    public Profile(String phoneNumber, String zipCode, String bio, User user) {
         this.phoneNumber = phoneNumber;
-        this.areaCode = areaCode;
+        this.zipCode = zipCode;
         this.bio = bio;
         this.user = user;
     }
@@ -62,12 +69,12 @@ public class Profile implements HasId{
         this.phoneNumber = phoneNumber;
     }
 
-    public String getAreaCode() {
-        return areaCode;
+    public String getZipCode() {
+        return zipCode;
     }
 
-    public void setAreaCode(String areaCode) {
-        this.areaCode = areaCode;
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
     public String getBio() {
@@ -100,5 +107,21 @@ public class Profile implements HasId{
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public List<String> getActivityNames() {
+        return activityNames;
+    }
+
+    public void setActivityNames(List<String> activityNames) {
+        this.activityNames = activityNames;
     }
 }
