@@ -54,7 +54,6 @@ public class Message implements HasId{
         this.author = author;
     }
 
-
     public User getReceiver() {
         return receiver;
     }

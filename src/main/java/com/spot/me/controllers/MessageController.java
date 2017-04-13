@@ -49,9 +49,12 @@ public class MessageController {
                 messageSerializer);
     }
 
+    // /messages?userid=123
+    // /users/123/messages
     @RequestMapping(path = "/messages/{id}", method= RequestMethod.GET)
     public Map<String, Object> findAllMessages(@PathVariable("id") String id) {
         User u = users.findFirstById(id);
+        //need to get by messageId. 
         List<Message> msgs = messages.findAllMessageByReceiverId(id);
 
         return rootSerializer.serializeMany(
