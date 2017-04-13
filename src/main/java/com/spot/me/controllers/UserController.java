@@ -146,6 +146,7 @@ public class UserController {
                 userActivity.save(new UsersActivity(user, name));
             }
         }
+
         if(profile.getDaysAvailable() != null) {
             userAvailability.removeUserAvailabilitiesById(user.getId());
             for(String a : profile.getDaysAvailable()) {
@@ -223,7 +224,7 @@ public class UserController {
                 activities.add(x.getActivityName().getActivityName());
             }
             UserAgeRange ageRange = userAgeRange.findFirstByUserId(userId);
-            ProfileView profile = new ProfileView(userId, user.getName(),user.getEmail(),p.getPhoneNumber(),p.getZipCode(),p.getBio(),p.getLatitude(), p.getLongitude(), ageRange.getAgeRange(), activities, aDays);
+            ProfileView profile = new ProfileView(userId, user.getName(),user.getEmail(),p.getPhoneNumber(),p.getZipCode(),p.getBio(),p.getLatitude(), p.getLongitude(), ageRange.getAgeRange(),p.getGender(), activities, aDays);
             return profile;
     }
 

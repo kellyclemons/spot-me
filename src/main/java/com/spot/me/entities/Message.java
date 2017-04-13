@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="messages")
-public class Message {
+public class Message implements HasId{
     static final long serialVersionUID = 42L;
     @Id
     @GeneratedValue(generator="system-uuid")
@@ -21,9 +21,10 @@ public class Message {
     @ManyToOne
     private User receiver;
 
-    public Message(String message, User author) {
+    public Message(String message, User author, User receiver) {
         this.message = message;
         this.author = author;
+        this.receiver = receiver;
     }
 
     public Message() {
@@ -61,4 +62,6 @@ public class Message {
     public void setReceiver(User receiver) {
         this.receiver = receiver;
     }
+
+
 }

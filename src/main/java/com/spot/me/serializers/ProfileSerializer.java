@@ -31,6 +31,7 @@ public class ProfileSerializer extends JsonDataSerializer {
         result.put("activites", profile.getActivities());
         result.put("availability", profile.getAvailability());
         result.put("ageRange", profile.getAgeRange());
+        result.put("gender", profile.getGender());
 
         return result;
     }

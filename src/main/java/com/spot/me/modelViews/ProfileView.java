@@ -20,10 +20,12 @@ public class ProfileView implements HasId{
     private double latitude;
     private double longitude;
     private String ageRange;
+    private String gender;
     private List<String> activities;
     private List<String> availability;
 
-    public ProfileView(String id, String name, String email, String phoneNumber, String zipCode, String bio, double latitude, double longitude, String ageRange, List<String> activities, List<String> availability) {
+
+    public ProfileView(String id, String name, String email, String phoneNumber, String zipCode, String bio, double latitude, double longitude, String ageRange, String gender, List<String> activities, List<String> availability) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -35,6 +37,7 @@ public class ProfileView implements HasId{
         this.ageRange = ageRange;
         this.activities = activities;
         this.availability = availability;
+        this.gender = gender;
     }
 
     public ProfileView() {
@@ -126,5 +129,13 @@ public class ProfileView implements HasId{
 
     public void setAgeRange(String ageRange) {
         this.ageRange = ageRange;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }
