@@ -30,7 +30,14 @@ public class Profile implements HasId{
     private double longitude;
 
     @Column
+    private double zipLatitude;
+
+    @Column
+    private double zipLongitude;
+
+    @Column
     private String gender;
+
 
     @OneToOne
     private User user;
@@ -148,5 +155,21 @@ public class Profile implements HasId{
 
     public void setAgeRange(String ageRange) {
         this.ageRange = ageRange;
+    }
+
+    public double getZipLatitude() {
+        return zipLatitude;
+    }
+
+    public void setZipLatitude(double zipLatitude) {
+        this.zipLatitude = zipLatitude;
+    }
+
+    public double getZipLongitude() {
+        return zipLongitude;
+    }
+
+    public void setZipLongitude(double zipLongitude) {
+        this.zipLongitude = zipLongitude;
     }
 }

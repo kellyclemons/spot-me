@@ -19,6 +19,8 @@ public class ProfileView implements HasId{
     private String bio;
     private double latitude;
     private double longitude;
+    private double zipLatitude;
+    private double ziplongitude;
     private String ageRange;
     private String gender;
     private List<String> activities;
