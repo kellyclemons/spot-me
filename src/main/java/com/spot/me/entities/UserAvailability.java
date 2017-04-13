@@ -12,10 +12,10 @@ public class UserAvailability implements HasId{
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid")
-    String id;
+    private String id;
 
     @Column(nullable=false)
-    String day;
+    private String day;
 
     @ManyToOne
     private User user;

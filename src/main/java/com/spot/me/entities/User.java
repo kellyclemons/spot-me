@@ -24,9 +24,6 @@ public class User implements HasId{
     @Column(nullable=false)
     private String password;
 
-//    @OneToOne
-//    Profile profile;
-
     public User() {
     }
 

@@ -68,7 +68,7 @@ public class UserController {
             }
         }
     }
-    //Login
+
     @RequestMapping(path="/login", method=RequestMethod.POST)
     public Map<String, Object> login(HttpServletResponse response, @RequestBody RootParser<User> parser) throws Exception {
         User user = parser.getData().getEntity();
@@ -83,7 +83,7 @@ public class UserController {
                 existingUser,
                 userSerializer);
     }
-    //Register
+
     @RequestMapping(path="/users", method=RequestMethod.POST)
     public Map<String, Object> register(HttpServletResponse response, @RequestBody RootParser<User> parser) throws Exception {
         User user = parser.getData().getEntity();
@@ -143,7 +143,7 @@ public class UserController {
             userActivity.removeUserActivitiesById(user.getId());
             for (String a : profile.getActivityNames()) {
                 ActivityName name = activityName.findFirstByActivityName(a);
-                userActivity.save(new UserActivity(user, name));
+                userActivity.save(new UsersActivity(user, name));
             }
         }
         if(profile.getDaysAvailable() != null) {
@@ -160,6 +160,11 @@ public class UserController {
             p.setLongitude(profile.getLongitude());
         }
 
+        if(profile.getAgeRange() != null) {
+            userAgeRange.removeUserAgeRangeByUserId(user.getId());
+            userAgeRange.save(new UserAgeRange(user, profile.getAgeRange()));
+        }
+
         ProfileView profileView =createProfile(p);
         return rootSerializer.serializeOne(
                 "/profile/" + profile.getId(),
@@ -171,22 +176,10 @@ public class UserController {
     public Map<String, Object> findOneProfile(@PathVariable("id") String id) {
 
         Profile profile = profiles.findFirstByUserId(id);
-        List<UserAvailability> availabilityDays = userAvailability.findDayByUserId(id);
-        List<String> aDays = new ArrayList<>();
-        for (UserAvailability x : availabilityDays){
-            aDays.add(x.getDay());
-        }
-
-        List<UserActivity> favoriteActivities = userActivity.findAllByUserId(id);
-        List<String> activites = new ArrayList<>();
-        for (UserActivity x : favoriteActivities){
-            activites.add(x.getActivityName().getActivityName());
-        }
-        User user = users.findFirstById(id);
-        ProfileView p = new ProfileView(id, profile.getPhoneNumber(),profile.getZipCode(),profile.getBio(),profile.getLatitude(),profile.getLongitude(),activites, aDays, user.getName(), user.getEmail());
+        ProfileView pv = createProfile(profile);
         return rootSerializer.serializeOne(
-                "/profile/" + p.getId(),
-                p,
+                "/profile/" + pv.getId(),
+                pv,
                 profileSerializer);
     }
 
@@ -224,12 +217,13 @@ public class UserController {
                 aDays.add(x.getDay());
             }
 
-            List<UserActivity> favoriteActivities = userActivity.findAllByUserId(p.getUser().getId());
-            List<String> activites = new ArrayList<>();
-            for (UserActivity x : favoriteActivities){
-                activites.add(x.getActivityName().getActivityName());
+            List<UsersActivity> favoriteActivities = userActivity.findAllByUserId(p.getUser().getId());
+            List<String> activities = new ArrayList<>();
+            for (UsersActivity x : favoriteActivities){
+                activities.add(x.getActivityName().getActivityName());
             }
-            ProfileView profile = new ProfileView(userId, p.getPhoneNumber(),p.getZipCode(),p.getBio(),p.getLatitude(),p.getLongitude(),activites, aDays, user.getName(), user.getEmail());
+            UserAgeRange ageRange = userAgeRange.findFirstByUserId(userId);
+            ProfileView profile = new ProfileView(userId, user.getName(),user.getEmail(),p.getPhoneNumber(),p.getZipCode(),p.getBio(),p.getLatitude(), p.getLongitude(), ageRange.getAgeRange(), activities, aDays);
             return profile;
     }
 

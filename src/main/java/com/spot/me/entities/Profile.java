@@ -41,6 +41,8 @@ public class Profile implements HasId{
     @Transient
     List<String> daysAvailable;
 
+    @Transient String ageRange;
+
     public Profile(String zipCode, User user) {
         this.zipCode = zipCode;
         this.user = user;
@@ -138,5 +140,13 @@ public class Profile implements HasId{
 
     public void setDaysAvailable(List<String> daysAvailable) {
         this.daysAvailable = daysAvailable;
+    }
+
+    public String getAgeRange() {
+        return ageRange;
+    }
+
+    public void setAgeRange(String ageRange) {
+        this.ageRange = ageRange;
     }
 }

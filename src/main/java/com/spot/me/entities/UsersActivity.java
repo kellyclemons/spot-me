@@ -7,7 +7,7 @@ import java.util.Collection;
 
 @Entity
 @Table(name="userActivities")
-public class UserActivity {
+public class UsersActivity {
     static final long serialVersionUID = 42L;
 
     @Id
@@ -21,10 +21,10 @@ public class UserActivity {
     @ManyToOne
     private ActivityName name;
 
-    public UserActivity() {
+    public UsersActivity() {
     }
 
-    public UserActivity(User user, ActivityName name){
+    public UsersActivity(User user, ActivityName name){
         this.user = user;
         this.name = name;
     }
