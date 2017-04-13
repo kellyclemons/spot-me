@@ -1,11 +1,7 @@
 package com.spot.me.modelViews;
 
-import com.spot.me.entities.ActivityName;
 import com.spot.me.entities.HasId;
-import com.spot.me.entities.UserActivity;
-import com.spot.me.entities.UserAvailability;
 
-import javax.persistence.Column;
 import java.util.List;
 
 /**
@@ -23,21 +19,25 @@ public class ProfileView implements HasId{
     private String bio;
     private double latitude;
     private double longitude;
+    private String ageRange;
+    private String gender;
     private List<String> activities;
     private List<String> availability;
 
-    public ProfileView(String id, String phoneNumber, String zipCode, String bio, double latitude, double longitude, List<String> activities, List<String> availability, String name, String email) {
+
+    public ProfileView(String id, String name, String email, String phoneNumber, String zipCode, String bio, double latitude, double longitude, String ageRange, String gender, List<String> activities, List<String> availability) {
         this.id = id;
+        this.name = name;
+        this.email = email;
         this.phoneNumber = phoneNumber;
         this.zipCode = zipCode;
         this.bio = bio;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.ageRange = ageRange;
         this.activities = activities;
         this.availability = availability;
-
-        this.name = name;
-        this.email = email;
+        this.gender = gender;
     }
 
     public ProfileView() {
@@ -121,5 +121,21 @@ public class ProfileView implements HasId{
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAgeRange() {
+        return ageRange;
+    }
+
+    public void setAgeRange(String ageRange) {
+        this.ageRange = ageRange;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

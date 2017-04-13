@@ -13,16 +13,19 @@ public class UserAgeRange {
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid")
-    String id;
+    private String id;
 
-    String ageRange;
+    private String ageRange;
 
     @ManyToOne
     private User user;
 
+    public UserAgeRange() {
+    }
+
     public UserAgeRange(User user, String ageRange) {
         for(String d : range) {
-            if(d.equals(range)) {
+            if(d.equals(ageRange)) {
                 this.user = user;
                 this.ageRange = ageRange;
             }
