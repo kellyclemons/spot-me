@@ -56,6 +56,10 @@ public class Profile implements HasId{
     public Profile() {
     }
 
+    public Profile(User user) {
+        this.user = user;
+    }
+
     public String getId() {
         return id;
     }

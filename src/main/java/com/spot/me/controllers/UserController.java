@@ -101,22 +101,6 @@ public class UserController {
                 userSerializer);
     }
 
-    @RequestMapping(path="/activities", method=RequestMethod.POST)
-    public Map<String, Object> addActivity(HttpServletResponse response, @RequestBody RootParser<ActivityName> parser){
-        ActivityName activity = parser.getData().getEntity();
-        User user = users.findFirstById(activity.getId());
-
-        for (String a : activity.getName()) {
-            ActivityName name = activityName.findFirstByActivityName(a);
-            userActivity.save(new UserActivity(user, name));
-        }
-
-        return rootSerializer.serializeOne(
-                "/activities/" + activity.getId(),
-                activity,
-                activityNameSerializer);
-    }
-
     @RequestMapping(path="/availabilities", method=RequestMethod.POST)
     public Map<String, Object> addAvailability(HttpServletResponse response, @RequestBody RootParser<UserAvailability> parser){
         UserAvailability availability = parser.getData().getEntity();
@@ -131,24 +115,16 @@ public class UserController {
                 userAvailabilitySerializer);
     }
 
-    @RequestMapping(path="/zipCode", method=RequestMethod.POST)
-    public Map<String, Object> addZip(HttpServletResponse response, @RequestBody RootParser<Profile> parser){
-        Profile profile = parser.getData().getEntity();
-        User user = users.findFirstById(profile.getId());
-
-        profiles.save(new Profile(profile.getZipCode(), user));
-
-        return rootSerializer.serializeOne(
-                "/zipCode/" + profile.getId(),
-                profile,
-                zipCodeSerializer);
-    }
-
     @RequestMapping(path="/profile", method = RequestMethod.PATCH)
     public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser){
         Profile profile = parser.getData().getEntity();
         User user = users.findFirstById(profile.getId());
+        if(profiles.findFirstByUserId(user.getId()) == null) {
+            Profile p = new Profile(user);
+            profiles.save(p);
+        }
         Profile p = profiles.findFirstByUserId(user.getId());
+
         if(profile.getZipCode() != null) {
             p.setZipCode(profile.getZipCode());
         }
@@ -175,6 +151,13 @@ public class UserController {
             for(String a : profile.getDaysAvailable()) {
                 userAvailability.save(new UserAvailability(user,a));
             }
+        }
+        if(profile.getLatitude() != 0) {
+            p.setLatitude(profile.getLatitude());
+        }
+
+        if(profile.getLongitude() != 0) {
+            p.setLongitude(profile.getLongitude());
         }
 
         ProfileView profileView =createProfile(p);

@@ -24,8 +24,8 @@ public class User implements HasId{
     @Column(nullable=false)
     private String password;
 
-    @OneToOne
-    Profile profile;
+//    @OneToOne
+//    Profile profile;
 
     public User() {
     }
@@ -81,11 +81,11 @@ public class User implements HasId{
     }
 
 
-    public Profile getProfile() {
-        return profile;
-    }
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-    }
+//    public Profile getProfile() {
+//        return profile;
+//    }
+//
+//    public void setProfile(Profile profile) {
+//        this.profile = profile;
+//    }
 }
