@@ -45,10 +45,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // All other requests must be authenticated
                 .anyRequest()
                 .authenticated().and()
+                .cors()
+                .and()
                 // Adds login route
                 .addFilterBefore(new JWTLoginFilter("/login", authenticationManager()),
                         UsernamePasswordAuthenticationFilter.class)
-                .cors().disable()
                 // Checks for Authorization token JWT
                 .addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
