@@ -38,19 +38,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // Allow registration without being logged in
                 .antMatchers(HttpMethod.POST, "/users")
-                    .permitAll()
+                .permitAll()
                 // Allow login without being logged in
                 .antMatchers(HttpMethod.POST, "/login")
-                    .permitAll()
-                    .addFilterBefore(new JWTLoginFilter("/login", authenticationManager()),
-                            UsernamePasswordAuthenticationFilter.class)
+                .permitAll()
                 // All other requests must be authenticated
                 .anyRequest()
-                    .authenticated().and()
-                    // Adds login route
-                    .cors().disable()
-                    // Checks for Authorization token JWT
-                    .addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .authenticated().and()
+                .cors()
+                .and()
+                // Adds login route
+                .addFilterBefore(new JWTLoginFilter("/login", authenticationManager()),
+                        UsernamePasswordAuthenticationFilter.class)
+                // Checks for Authorization token JWT
+                .addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Autowired
