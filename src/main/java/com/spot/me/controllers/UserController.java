@@ -36,6 +36,7 @@ public class UserController {
     private ProfileRepository profiles;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     RootSerializer rootSerializer;
     UserSerializer userSerializer;
     ActivityNameSerializer activityNameSerializer;
