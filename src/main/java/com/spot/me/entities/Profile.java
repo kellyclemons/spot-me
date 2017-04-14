@@ -1,17 +1,19 @@
 package com.spot.me.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name="profiles")
-public class Profile implements HasId{
+@Table(name = "profiles")
+public class Profile implements HasId {
     static final long serialVersionUID = 42L;
     @Id
-    @GeneratedValue(generator="system-uuid")
-    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @JsonProperty("user-id")
     String id;
 
     @Column
@@ -48,7 +50,8 @@ public class Profile implements HasId{
     @Transient
     List<String> daysAvailable;
 
-    @Transient String ageRange;
+    @Transient
+    String ageRange;
 
     public Profile(String zipCode, User user) {
         this.zipCode = zipCode;

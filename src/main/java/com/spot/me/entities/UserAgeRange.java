@@ -1,5 +1,6 @@
 package com.spot.me.entities;
 
+import com.sun.xml.internal.ws.api.model.ExceptionType;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -8,7 +9,7 @@ import javax.persistence.*;
 @Table(name="userAgeRange")
 public class UserAgeRange {
     static final long serialVersionUID = 42L;
-    static private final String[] range = {"18-24", "25-34", "35-44", "45-54", "55-64", "over 65"};
+    static private final String[] range = {"18-24", "25-34", "35-44", "45-54", "55-64", "over 65", "N/A"};
 
     @Id
     @GeneratedValue(generator="system-uuid")
@@ -23,13 +24,14 @@ public class UserAgeRange {
     public UserAgeRange() {
     }
 
-    public UserAgeRange(User user, String ageRange) {
-        for(String d : range) {
-            if(d.equals(ageRange)) {
+    public UserAgeRange(User user, String ageRange){
+        for (String d : range) {
+            if (d.equals(ageRange)) {
                 this.user = user;
                 this.ageRange = ageRange;
             }
         }
+
     }
 
     public static String[] getRange() {

@@ -6,12 +6,18 @@ import com.spot.me.modelViews.ProfileView;
 import com.spot.me.serializers.*;
 import com.spot.me.serializers.ZipCodeSerializer;
 import com.spot.me.services.*;
+import com.spot.me.utilities.Geocode;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import sun.misc.Request;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -104,10 +110,11 @@ public class UserController {
                 userSerializer);
     }
 
-    @RequestMapping(path = "/users", method = RequestMethod.PATCH)
-    public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser) {
+    @RequestMapping(path = "/users/{id}/profile", method = RequestMethod.PATCH)
+    public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser) throws Exception {
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        User user = users.findFirstByEmail(u.getName());
         Profile profile = parser.getData().getEntity();
-        User user = users.findFirstById(profile.getId());
         if (profiles.findFirstByUserId(user.getId()) == null) {
             Profile p = new Profile(user);
             profiles.save(p);
@@ -116,6 +123,7 @@ public class UserController {
 
         if (profile.getZipCode() != null) {
             p.setZipCode(profile.getZipCode());
+            String location = getLocationFromZip(profile.getZipCode());
         }
         if (profile.getBio() != null) {
             p.setBio(profile.getBio());
@@ -164,8 +172,9 @@ public class UserController {
 
     @RequestMapping(path = "/users/{id}", method = RequestMethod.GET)
     public Map<String, Object> findOneProfile(@PathVariable("id") String id) {
-
-        Profile profile = profiles.findFirstByUserId(id);
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        User user = users.findFirstByEmail(u.getName());
+        Profile profile = profiles.findFirstByUserId(user.getId());
         ProfileView pv = createProfile(profile);
         return rootSerializer.serializeOne(
                 "/profile/" + pv.getId(),
@@ -174,8 +183,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/users", method = RequestMethod.GET)
-    public Map<String, Object> findAllProfileInZipCodeWithFilter(@RequestParam(value = "filter[zip]", required = false) String zipCode,
-                                                                 @RequestParam(value = "filter[activity]", required = false) List<String> filter) {
+    public Map<String, Object> findAllProfileInZipCodeWithFilter(@RequestParam(value = "filter[zip]", required = false) String zipCode, @RequestParam(value = "filter[activity]", required = false) List<String> filter) {
         List<ProfileView> usersWithInterest = new ArrayList<>();
         List<Profile> usersInArea = profiles.findByZipCode(zipCode);
         if (zipCode.equals("")) {
@@ -212,11 +220,30 @@ public class UserController {
         for (UsersActivity x : favoriteActivities) {
             activities.add(x.getActivityName().getActivityName());
         }
+
         UserAgeRange ageRange = userAgeRange.findFirstByUserId(userId);
+        if(ageRange == null) {
+            userAgeRange.save(new UserAgeRange(user, "N/A"));
+        }
+        ageRange = userAgeRange.findFirstByUserId(userId);
         ProfileView profile = new ProfileView(userId, user.getName(), user.getEmail(), p.getPhoneNumber(),
                 p.getZipCode(), p.getBio(), p.getLatitude(), p.getLongitude(), ageRange.getAgeRange(), p.getGender(),
                 activities, aDays);
         return profile;
     }
 
+    public String getLocationFromZip(String zip) {
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        String url="https://maps.googleapis.com/maps/api/geocode/json?address=" + zip + " +&key=AIzaSyDoKoDr3vBROrz5WuUfyak1S8CdCh08F1w";
+
+        RestTemplate rt = new RestTemplate();
+
+        ResponseEntity<Geocode> geocode = rt.exchange(url, HttpMethod.GET, entity, Geocode.class);
+        String lat = geocode.getBody().getLat();
+        String lng = geocode.getBody().getLng();
+        String coordinates = lat + "" + lng;
+        return coordinates;
+    }
 }

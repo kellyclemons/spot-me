@@ -23,7 +23,7 @@ public class ProfileSerializer extends JsonDataSerializer {
         result.put("name", profile.getName());
         result.put("email", profile.getEmail());
         result.put("id", profile.getId());
-        result.put("phoneNumber", profile.getPhoneNumber());
+        result.put("phone-number", profile.getPhoneNumber());
         result.put("zipCode", profile.getZipCode());
         result.put("bio", profile.getBio());
         result.put("latitude", profile.getLatitude());
