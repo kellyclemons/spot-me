@@ -20,14 +20,14 @@ public class ProfileView implements HasId{
     private double latitude;
     private double longitude;
     private double zipLatitude;
-    private double ziplongitude;
+    private double zipLongitude;
     private String ageRange;
     private String gender;
     private List<String> activities;
     private List<String> availability;
 
 
-    public ProfileView(String id, String name, String email, String phoneNumber, String zipCode, String bio, double latitude, double longitude, String ageRange, String gender, List<String> activities, List<String> availability) {
+    public ProfileView(String id, String name, String email, String phoneNumber, String zipCode, String bio, double latitude, double longitude, String ageRange, String gender, double zipLatitude, double zipLongitude, List<String> activities, List<String> availability) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -40,6 +40,8 @@ public class ProfileView implements HasId{
         this.activities = activities;
         this.availability = availability;
         this.gender = gender;
+        this.zipLatitude = zipLatitude;
+        this.zipLongitude = zipLongitude;
     }
 
     public ProfileView() {
@@ -139,5 +141,21 @@ public class ProfileView implements HasId{
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public double getZipLatitude() {
+        return zipLatitude;
+    }
+
+    public void setZipLatitude(double zipLatitude) {
+        this.zipLatitude = zipLatitude;
+    }
+
+    public double getZiplongitude() {
+        return zipLongitude;
+    }
+
+    public void setZiplongitude(double ziplongitude) {
+        this.zipLongitude = ziplongitude;
     }
 }
