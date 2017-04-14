@@ -11,6 +11,8 @@ import com.spot.me.services.MessageRepository;
 import com.spot.me.services.UserRepository;
 import com.spot.me.utilities.Messenger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -38,7 +40,8 @@ public class MessageController {
     @RequestMapping(path = "/messages", method= RequestMethod.POST)
     public Map<String, Object> SendMessage(HttpServletResponse response, @RequestBody RootParser<Messenger> parser) {
         Messenger message = parser.getData().getEntity();
-        User author = users.findFirstById(message.getAuthorId());
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        User author = users.findFirstByEmail(u.getName());
         User receiver = users.findFirstById(message.getAuthorId());
         Message msg = new Message(message.getMessage(),author, receiver);
         messages.save(msg);
@@ -53,12 +56,13 @@ public class MessageController {
     // /users/123/messages
     @RequestMapping(path = "/messages/{id}", method= RequestMethod.GET)
     public Map<String, Object> findAllMessages(@PathVariable("id") String id) {
-        User u = users.findFirstById(id);
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        User user = users.findFirstByEmail(u.getName());
         //need to get by messageId. 
         List<Message> msgs = messages.findAllMessageByReceiverId(id);
 
         return rootSerializer.serializeMany(
-                "/profile/" + u.getId(),
+                "/profile/" + user.getId(),
                 msgs,
                 messageSerializer);
 
