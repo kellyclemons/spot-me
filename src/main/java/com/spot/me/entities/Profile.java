@@ -16,9 +16,11 @@ public class Profile implements HasId {
     @JsonProperty("user-id")
     String id;
 
+    @JsonProperty("phone-number")
     @Column
     private String phoneNumber;
 
+    @JsonProperty("zip-code")
     @Column
     private String zipCode;
 
@@ -31,8 +33,11 @@ public class Profile implements HasId {
     @Column
     private double longitude;
 
+    @JsonProperty("zip-latitude")
     @Column
     private double zipLatitude;
+
+    @JsonProperty("zip-longitude")
 
     @Column
     private double zipLongitude;
@@ -44,12 +49,15 @@ public class Profile implements HasId {
     @OneToOne
     private User user;
 
+    @JsonProperty("activity-names")
     @Transient
     List<String> activityNames;
 
+    @JsonProperty("days-available")
     @Transient
     List<String> daysAvailable;
 
+    @JsonProperty("age-range")
     @Transient
     String ageRange;
 

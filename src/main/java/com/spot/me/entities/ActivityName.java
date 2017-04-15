@@ -1,4 +1,5 @@
 package com.spot.me.entities;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ public class ActivityName implements HasId{
     @GenericGenerator(name="system-uuid", strategy = "uuid")
     private String id;
 
+    @JsonProperty("activity-name")
     @Column(nullable=false)
     private String activityName;
 

@@ -1,5 +1,6 @@
 package com.spot.me.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.xml.internal.ws.api.model.ExceptionType;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -16,6 +17,7 @@ public class UserAgeRange {
     @GenericGenerator(name="system-uuid", strategy = "uuid")
     private String id;
 
+    @JsonProperty("age-range")
     private String ageRange;
 
     @ManyToOne
