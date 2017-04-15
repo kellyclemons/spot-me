@@ -1,4 +1,4 @@
-package com.spot.me.utilities;
+package com.spot.me.utilities.Location;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

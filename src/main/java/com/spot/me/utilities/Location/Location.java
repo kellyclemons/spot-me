@@ -1,4 +1,4 @@
-package com.spot.me.utilities;
+package com.spot.me.utilities.Location;
 
 /**
  * Created by BHarris on 4/14/17.

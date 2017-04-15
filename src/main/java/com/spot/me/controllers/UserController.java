@@ -6,7 +6,7 @@ import com.spot.me.modelViews.ProfileView;
 import com.spot.me.serializers.*;
 import com.spot.me.serializers.ZipCodeSerializer;
 import com.spot.me.services.*;
-import com.spot.me.utilities.Geocode;
+import com.spot.me.utilities.Location.Geocode;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -124,7 +124,18 @@ public class UserController {
         if (profile.getZipCode() != null) {
             p.setZipCode(profile.getZipCode());
             String location = getLocationFromZip(profile.getZipCode());
+            String[] loc = location.split(",");
+
+            for(int i=0; i< loc.length; i++) {
+                Double num = Double.parseDouble(loc[i]);
+                if(i == 0) {
+                    p.setZipLatitude(num);
+                } else {
+                    p.setZipLongitude(num);
+                }
+            }
         }
+
         if (profile.getBio() != null) {
             p.setBio(profile.getBio());
         }
@@ -161,14 +172,6 @@ public class UserController {
         if (profile.getAgeRange() != null) {
             userAgeRange.removeUserAgeRangeByUserId(user.getId());
             userAgeRange.save(new UserAgeRange(user, profile.getAgeRange()));
-        }
-
-        if(profile.getZipLatitude() != 0) {
-            p.setZipLatitude(profile.getZipLatitude());
-        }
-
-        if(profile.getZipLongitude() != 0) {
-            p.setZipLongitude(profile.getZipLongitude());
         }
 
         ProfileView profileView = createProfile(p);
@@ -236,7 +239,7 @@ public class UserController {
         ageRange = userAgeRange.findFirstByUserId(userId);
         ProfileView profile = new ProfileView(userId, user.getName(), user.getEmail(), p.getPhoneNumber(),
                 p.getZipCode(), p.getBio(), p.getLatitude(), p.getLongitude(), ageRange.getAgeRange(), p.getGender(),
-                p.getZipLatitude(), p.getLongitude(), activities, aDays);
+                p.getZipLatitude(), p.getZipLongitude(), activities, aDays);
         return profile;
     }
 
@@ -251,7 +254,7 @@ public class UserController {
         ResponseEntity<Geocode> geocode = rt.exchange(url, HttpMethod.GET, entity, Geocode.class);
         String lat = geocode.getBody().getLat();
         String lng = geocode.getBody().getLng();
-        String coordinates = lat + " " + lng;
+        String coordinates = lat + "," + lng;
         return coordinates;
     }
 }
