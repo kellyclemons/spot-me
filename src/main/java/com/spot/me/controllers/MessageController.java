@@ -90,4 +90,25 @@ public class MessageController {
                 msg,
                 messageSerializer);
     }
+
+    @RequestMapping(path="/users/{userid}/messages", method=RequestMethod.DELETE)
+    public Map<String, Object> DeleteAllMessagesForUser(@PathVariable("userid") String userId){
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        User user = users.findFirstByEmail(u.getName());
+        List<Message> msgs = messages.findAllMessageByReceiverId(user.getId());
+
+        for (Message m : msgs) {
+            messages.delete(m.getId());
+        }
+
+        return rootSerializer.serializeMany(
+                "/messages/" + user.getId(),
+                msgs,
+                messageSerializer);
+    }
+
+
+
+
+
 }
