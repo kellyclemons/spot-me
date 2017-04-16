@@ -106,9 +106,4 @@ public class MessageController {
                 msgs,
                 messageSerializer);
     }
-
-
-
-
-
 }
