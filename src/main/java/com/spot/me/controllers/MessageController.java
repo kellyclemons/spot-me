@@ -42,30 +42,52 @@ public class MessageController {
         Messenger message = parser.getData().getEntity();
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         User author = users.findFirstByEmail(u.getName());
-        User receiver = users.findFirstById(message.getAuthorId());
+        User receiver = users.findFirstById(message.getReceiverId());
         Message msg = new Message(message.getMessage(),author, receiver);
         messages.save(msg);
 
         return rootSerializer.serializeOne(
-                "/register/" + message.getAuthorId(),
+                "/messages/" + message.getAuthorId(),
                 msg,
                 messageSerializer);
     }
 
-    // /messages?userid=123
-    // /users/123/messages
-    @RequestMapping(path = "/messages/{id}", method= RequestMethod.GET)
-    public Map<String, Object> findAllMessages(@PathVariable("id") String id) {
+    @RequestMapping(path = "/users/{userid}/messages/{messageid}", method= RequestMethod.GET)
+    public Map<String, Object> findOneMessage(@PathVariable("userid") String userId, @PathVariable("messageid") String messageId) {
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         User user = users.findFirstByEmail(u.getName());
-        //need to get by messageId. 
-        List<Message> msgs = messages.findAllMessageByReceiverId(id);
 
-        return rootSerializer.serializeMany(
-                "/profile/" + user.getId(),
-                msgs,
+        Message msg = messages.findOne(messageId);
+
+        return rootSerializer.serializeOne(
+                "/messages/" + user.getId(),
+                msg,
                 messageSerializer);
-
     }
 
+    @RequestMapping(path="/users/{userid}/messages", method=RequestMethod.GET)
+    public Map<String, Object> findAllMessagesForUser(@PathVariable("userid") String userId){
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        User user = users.findFirstByEmail(u.getName());
+        List<Message> msgs = messages.findAllMessageByReceiverId(user.getId());
+
+        return rootSerializer.serializeMany(
+                "/messages/" + user.getId(),
+                msgs,
+                messageSerializer);
+    }
+
+    @RequestMapping(path = "/users/{userid}/messages/{messageid}", method= RequestMethod.DELETE)
+    public Map<String, Object> DeleteOneMessage(@PathVariable("userid") String userId, @PathVariable("messageid") String messageId) {
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        User user = users.findFirstByEmail(u.getName());
+
+        Message msg = messages.findOne(messageId);
+        messages.delete(msg.getId());
+
+        return rootSerializer.serializeOne(
+                "/messages/" + user.getId(),
+                msg,
+                messageSerializer);
+    }
 }

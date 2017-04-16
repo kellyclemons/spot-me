@@ -145,7 +145,7 @@ public class UserController {
         if (profile.getGender() != null) {
             p.setGender(profile.getGender());
         }
-        profiles.save(p);
+
 
         if (profile.getActivityNames() != null) {
             userActivity.removeUserActivitiesById(user.getId());
@@ -173,6 +173,8 @@ public class UserController {
             userAgeRange.removeUserAgeRangeByUserId(user.getId());
             userAgeRange.save(new UserAgeRange(user, profile.getAgeRange()));
         }
+
+        profiles.save(p);
 
         ProfileView profileView = createProfile(p);
         return rootSerializer.serializeOne(
