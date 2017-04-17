@@ -1,6 +1,6 @@
 package com.spot.me.controllers;
 
-import com.spot.me.Parsers.RootParser;
+import com.spot.me.parsers.RootParser;
 import com.spot.me.entities.*;
 import com.spot.me.modelViews.ProfileView;
 import com.spot.me.serializers.*;

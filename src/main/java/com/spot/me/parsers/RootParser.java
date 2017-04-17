@@ -1,4 +1,4 @@
-package com.spot.me.Parsers;
+package com.spot.me.parsers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

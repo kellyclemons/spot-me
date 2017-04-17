@@ -1,10 +1,8 @@
 package com.spot.me.controllers;
 
-import com.spot.me.Parsers.RootParser;
+import com.spot.me.parsers.RootParser;
 import com.spot.me.entities.Message;
-import com.spot.me.entities.Profile;
 import com.spot.me.entities.User;
-import com.spot.me.modelViews.ProfileView;
 import com.spot.me.serializers.MessageSerializer;
 import com.spot.me.serializers.RootSerializer;
 import com.spot.me.services.MessageRepository;

@@ -1,8 +1,7 @@
 package com.spot.me.controllers;
 
 
-import com.spot.me.Parsers.RootParser;
-import com.spot.me.entities.Message;
+import com.spot.me.parsers.RootParser;
 import com.spot.me.entities.Rating;
 import com.spot.me.entities.User;
 import com.spot.me.modelViews.AverageRating;
