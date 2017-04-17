@@ -29,7 +29,7 @@ public class ProfileSerializer extends JsonDataSerializer {
         result.put("latitude", profile.getLatitude());
         result.put("longitude", profile.getLongitude());
         result.put("activity-names", profile.getActivities());
-        result.put("days-availability", profile.getAvailability());
+        result.put("days-available", profile.getAvailability());
         result.put("age-range", profile.getAgeRange());
         result.put("gender", profile.getGender());
         result.put("zip-latitude", profile.getZipLatitude());

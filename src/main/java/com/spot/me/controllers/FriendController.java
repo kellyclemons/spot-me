@@ -2,6 +2,7 @@ package com.spot.me.controllers;
 
 
 import com.spot.me.entities.Friend;
+import com.spot.me.entities.Profile;
 import com.spot.me.entities.User;
 import com.spot.me.parsers.RootParser;
 import com.spot.me.serializers.FriendSerializer;
@@ -51,4 +52,12 @@ public class FriendController {
                 friend,
                 friendSerializer);
     }
+
+//    @RequestMapping(path="/friends", method = RequestMethod.PATCH)
+//    public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser) {
+//        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+//        User user = users.findFirstByEmail(u.getName());
+//
+//
+//    }
 }
