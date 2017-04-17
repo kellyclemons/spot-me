@@ -10,14 +10,12 @@ import com.spot.me.services.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 public class FriendController {
 
@@ -37,17 +35,22 @@ public class FriendController {
         friendSerializer = new FriendSerializer();
     }
 
-    @RequestMapping(path="/friends", method = RequestMethod.POST)
-    public Map<String, Object> SendMessage(HttpServletResponse response, @RequestBody RootParser<Friend> parser) {
+    @RequestMapping(path = "/friends", method = RequestMethod.POST)
+    public Map<String, Object> requestFriend(HttpServletResponse response, @RequestBody RootParser<Friend> parser) {
         Friend data = parser.getData().getEntity();
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
 
-
-
+        Friend friend = new Friend(0, data.getRequester(), data.getRequestee());
+        friends.save(friend);
 
         return rootSerializer.serializeOne(
-                "/messages/" + data.getId(),
-                data,
+                "/messages/" + friend.getId(),
+                friend,
                 friendSerializer);
     }
+
+//    @RequestMapping(path="/friends", method = RequestMethod.PATCH)
+//    public Map<String, Object> changeFriendStatus(HttpServletResponse response, @RequestBody RootParser<Friend> parser) {
+//
+//    }
 }
