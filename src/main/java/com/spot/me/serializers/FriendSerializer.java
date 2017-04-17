@@ -16,8 +16,8 @@ public class FriendSerializer extends JsonDataSerializer {
         Friend friend = (Friend) entity;
 
         result.put("id", friend.getId());
-        result.put("requester", friend.getRequester());
-        result.put("requestee", friend.getRequestee());
+        result.put("sender", friend.getRequester().getId());
+        result.put("receiver", friend.getRequestee().getId());
         result.put("status", friend.getStatus());
 
         return result;

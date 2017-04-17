@@ -1,8 +1,6 @@
 package com.spot.me.controllers;
 
-
 import com.spot.me.entities.Friend;
-import com.spot.me.entities.Profile;
 import com.spot.me.entities.User;
 import com.spot.me.parsers.RootParser;
 import com.spot.me.serializers.FriendSerializer;
@@ -16,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -43,21 +42,47 @@ public class FriendController {
         Friend data = parser.getData().getEntity();
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         User req = users.findFirstByEmail(u.getName());
-        User user = users.findFirstById(data.getRequestee().getId());
+        User user = users.findFirstById(data.getRequesteridNum());
         Friend friend = new Friend(0, req, user);
         friends.save(friend);
 
         return rootSerializer.serializeOne(
                 "/messages/" + friend.getId(),
                 friend,
+                friendSerializer
+        );
+    }
+
+    @RequestMapping(path = "/friends/requests/{id}", method = RequestMethod.GET)
+    public Map<String, Object> getAllFriendRequests(@PathVariable("userid") String userId) {
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        User user = users.findFirstByEmail(u.getName());
+        List<Friend> friendRequests = friends.findAllByRequesteeIdAndStatus(user.getId(), 0);
+
+        return rootSerializer.serializeMany(
+                "/messages/" + user.getId(),
+                friendRequests,
                 friendSerializer);
     }
 
-//    @RequestMapping(path="/friends", method = RequestMethod.PATCH)
-//    public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser) {
-//        Authentication u = SecurityContextHolder.getContext().getAuthentication();
-//        User user = users.findFirstByEmail(u.getName());
-//
-//
-//    }
+    @RequestMapping(path = "/friends", method=RequestMethod.PATCH)
+    public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Friend> parser) {
+        Friend data = parser.getData().getEntity();
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        User user = users.findFirstByEmail(u.getName());
+        Friend request = friends.findOne(data.getId());
+
+        if(data.getStatus() == 1) {
+            request.setStatus(data.getStatus());
+        }else if (data.getStatus() == 2) {
+            request.setStatus(data.getStatus());
+        }
+        friends.save(request);
+
+        return rootSerializer.serializeOne(
+                "/messages/" + request.getId(),
+                request,
+                friendSerializer);
+    }
+
 }

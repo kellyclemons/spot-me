@@ -1,5 +1,6 @@
 package com.spot.me.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -22,17 +23,21 @@ public class Friend implements HasId {
     @ManyToOne
     private User requestee;
 
+    @Transient
+    @JsonProperty("sender-id")
+    private String requesteridNum;
+
+    @Transient
+    @JsonProperty("receiver-id")
+    private String requesteeIdNum;
+
     public Friend(int status, User requester, User requestee) {
         this.status = status;
         this.requester = requester;
         this.requestee = requestee;
     }
 
-    @Transient
-    private String requesteridNum;
-
-    @Transient
-    private String requesteeIdNum;
+    public Friend() {}
 
     public int getStatus() {
         return status;
