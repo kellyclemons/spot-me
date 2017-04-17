@@ -26,11 +26,11 @@ public class Rating implements HasId {
 
     @Transient
     @JsonProperty("rater-id")
-    private String raterId;
+    private String rateId;
 
     @Transient
     @JsonProperty("receiver-id")
-    private String receiverId;
+    private String recId;
 
     public Rating() {
     }
@@ -73,19 +73,19 @@ public class Rating implements HasId {
         this.receiver = receiver;
     }
 
-    public String getRaterId() {
-        return raterId;
+    public String getRateId() {
+        return rateId;
     }
 
-    public void setRaterId(String raterId) {
-        this.raterId = raterId;
+    public void setRateId(String rateId) {
+        this.rateId = rateId;
     }
 
-    public String getReceiverId() {
-        return receiverId;
+    public String getRecId() {
+        return recId;
     }
 
-    public void setReceiverId(String receiverId) {
-        this.receiverId = receiverId;
+    public void setRecId(String recId) {
+        this.recId = recId;
     }
 }
