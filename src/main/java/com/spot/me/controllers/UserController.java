@@ -1,20 +1,27 @@
 package com.spot.me.controllers;
 
-import com.spot.me.Parsers.RootParser;
+import com.spot.me.parsers.RootParser;
 import com.spot.me.entities.*;
 import com.spot.me.modelViews.ProfileView;
 import com.spot.me.serializers.*;
 import com.spot.me.serializers.ZipCodeSerializer;
 import com.spot.me.services.*;
+import com.spot.me.utilities.Location.Geocode;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import sun.misc.Request;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -83,8 +90,7 @@ public class UserController {
         if (existingUser != null) {
             response.sendError(422, "Username is taken.");
         } else {
-            u = new User(user.getEmail(), user.getName(),
-                    bCryptPasswordEncoder.encode(user.getPassword()));
+            u = new User(user.getEmail(), user.getName(), bCryptPasswordEncoder.encode(user.getPassword()));
             users.save(u);
         }
         return rootSerializer.serializeOne(
@@ -104,10 +110,14 @@ public class UserController {
                 userSerializer);
     }
 
-    @RequestMapping(path = "/users", method = RequestMethod.PATCH)
-    public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser) {
+    @RequestMapping(path = "/users/{id}/profile", method = RequestMethod.PATCH)
+    public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser) throws Exception {
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        User user = users.findFirstByEmail(u.getName());
+        if(user == null) {
+            response.sendError(404, "user could not be found.");
+        }
         Profile profile = parser.getData().getEntity();
-        User user = users.findFirstById(profile.getId());
         if (profiles.findFirstByUserId(user.getId()) == null) {
             Profile p = new Profile(user);
             profiles.save(p);
@@ -116,7 +126,19 @@ public class UserController {
 
         if (profile.getZipCode() != null) {
             p.setZipCode(profile.getZipCode());
+            String location = getLocationFromZip(profile.getZipCode());
+            String[] loc = location.split(",");
+
+            for(int i=0; i< loc.length; i++) {
+                Double num = Double.parseDouble(loc[i]);
+                if(i == 0) {
+                    p.setZipLatitude(num);
+                } else {
+                    p.setZipLongitude(num);
+                }
+            }
         }
+
         if (profile.getBio() != null) {
             p.setBio(profile.getBio());
         }
@@ -126,7 +148,7 @@ public class UserController {
         if (profile.getGender() != null) {
             p.setGender(profile.getGender());
         }
-        profiles.save(p);
+
 
         if (profile.getActivityNames() != null) {
             userActivity.removeUserActivitiesById(user.getId());
@@ -155,6 +177,8 @@ public class UserController {
             userAgeRange.save(new UserAgeRange(user, profile.getAgeRange()));
         }
 
+        profiles.save(p);
+
         ProfileView profileView = createProfile(p);
         return rootSerializer.serializeOne(
                 "/profile/" + profile.getId(),
@@ -163,9 +187,13 @@ public class UserController {
     }
 
     @RequestMapping(path = "/users/{id}", method = RequestMethod.GET)
-    public Map<String, Object> findOneProfile(@PathVariable("id") String id) {
-
-        Profile profile = profiles.findFirstByUserId(id);
+    public Map<String, Object> findOneProfile(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        User user = users.findFirstByEmail(u.getName());
+        if(user == null) {
+            response.sendError(404, "user could not be found.");
+        }
+        Profile profile = profiles.findFirstByUserId(user.getId());
         ProfileView pv = createProfile(profile);
         return rootSerializer.serializeOne(
                 "/profile/" + pv.getId(),
@@ -174,13 +202,12 @@ public class UserController {
     }
 
     @RequestMapping(path = "/users", method = RequestMethod.GET)
-    public Map<String, Object> findAllProfileInZipCodeWithFilter(@RequestParam(value = "filter[zip]", required = false) String zipCode,
-                                                                 @RequestParam(value = "filter[activity]", required = false) List<String> filter) {
+    public Map<String, Object> findAllProfileInZipCodeWithFilter(@RequestParam(value = "filter[zip]", required = false) String zipCode, @RequestParam(value = "filter[activity]", required = false) List<String> filter) {
         List<ProfileView> usersWithInterest = new ArrayList<>();
-        List<Profile> usersInArea = profiles.findByZipCode(zipCode);
         if (zipCode.equals("")) {
             zipCode = "37243";
         }
+        List<Profile> usersInArea = profiles.findByZipCode(zipCode);
         if (filter == null || filter.size() <= 0) {
             for (Profile p : usersInArea) {
                 usersWithInterest.add(createProfile(p));
@@ -201,6 +228,7 @@ public class UserController {
 
         String userId = p.getUser().getId();
         User user = users.findFirstById(userId);
+
         List<UserAvailability> availabilityDays = userAvailability.findDayByUserId(p.getUser().getId());
         List<String> aDays = new ArrayList<>();
         for (UserAvailability x : availabilityDays) {
@@ -212,11 +240,31 @@ public class UserController {
         for (UsersActivity x : favoriteActivities) {
             activities.add(x.getActivityName().getActivityName());
         }
+
         UserAgeRange ageRange = userAgeRange.findFirstByUserId(userId);
+        if(ageRange == null) {
+            userAgeRange.save(new UserAgeRange(user, "N/A"));
+        }
+        ageRange = userAgeRange.findFirstByUserId(userId);
         ProfileView profile = new ProfileView(userId, user.getName(), user.getEmail(), p.getPhoneNumber(),
                 p.getZipCode(), p.getBio(), p.getLatitude(), p.getLongitude(), ageRange.getAgeRange(), p.getGender(),
-                activities, aDays);
+                p.getZipLatitude(), p.getZipLongitude(), activities, aDays);
         return profile;
+    }
+
+    public String getLocationFromZip(String zip) {
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        String url="https://maps.googleapis.com/maps/api/geocode/json?address=" + zip + " +&key=AIzaSyDoKoDr3vBROrz5WuUfyak1S8CdCh08F1w";
+
+        RestTemplate rt = new RestTemplate();
+
+        ResponseEntity<Geocode> geocode = rt.exchange(url, HttpMethod.GET, entity, Geocode.class);
+        String lat = geocode.getBody().getLat();
+        String lng = geocode.getBody().getLng();
+        String coordinates = lat + "," + lng;
+        return coordinates;
     }
 
 }
