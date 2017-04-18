@@ -35,6 +35,8 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('com.amazonaws:aws-java-sdk:1.9.2')
 	compile('org.jodd:jodd-json:3.8.1')
+
+	compile('org.springframework.boot:spring-boot-starter-mail')
 	compile('org.springframework.boot:spring-boot-starter-security')
 	compile('io.jsonwebtoken:jjwt:0.7.0')
 	runtime('org.springframework.boot:spring-boot-devtools')

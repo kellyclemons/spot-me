@@ -49,7 +49,7 @@ public class Profile implements HasId {
     @OneToOne
     private User user;
 
-    @JsonProperty("activity-names")
+    @JsonProperty("activities")
     @Transient
     List<String> activityNames;
 

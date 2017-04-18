@@ -110,7 +110,7 @@ public class UserController {
                 userSerializer);
     }
 
-    @RequestMapping(path = "/users/{id}/profile", method = RequestMethod.PATCH)
+    @RequestMapping(path = "/users/{id}", method = RequestMethod.PATCH)
     public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser) throws Exception {
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         User user = users.findFirstByEmail(u.getName());
