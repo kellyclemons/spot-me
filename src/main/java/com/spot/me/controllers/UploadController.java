@@ -1,7 +1,6 @@
 package com.spot.me.controllers;
 import java.util.Map;
 
-import com.spot.me.entities.Profile;
 import com.spot.me.entities.ProfilePicture;
 import com.spot.me.entities.User;
 import com.spot.me.parsers.RootParser;
@@ -68,7 +67,7 @@ public class UploadController {
     }
 
     @RequestMapping(path = "/photo-posts/upload", method = RequestMethod.POST)
-    public Map<String, Object> uploadPost(@RequestParam("photo") MultipartFile file, @RequestParam("caption") String caption)
+    public Map<String, Object> uploadPost(@RequestParam("photo") MultipartFile file)
             throws Exception {
         // Creating a new PhotoPost Entity
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
