@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -39,12 +40,14 @@ public class RatingController {
     }
 
     @RequestMapping(value = "/rating", method = RequestMethod.POST)
-    public Map<String, Object> SendMessage(HttpServletResponse response, @RequestBody RootParser<Rating> parser) {
+    public Map<String, Object> SendMessage(HttpServletResponse response, @RequestBody RootParser<Rating> parser) throws IOException {
         Rating rate = parser.getData().getEntity();
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         User rater = users.findFirstByEmail(u.getName());
-
         User receiver = users.findFirstById(rate.getRecId());
+        if(rater == null || receiver == null) {
+            response.sendError(404, "Either the rater, or receiver does not exist.");
+        }
         Rating rating = new Rating(rate.getRating(), rater, receiver);
         ratings.save(rating);
 
@@ -55,10 +58,12 @@ public class RatingController {
     }
 
     @RequestMapping(path = "/users/{userid}/rating", method= RequestMethod.GET)
-    public Map<String, Object> returnAverageRating(@PathVariable("userid") String userId) {
+    public Map<String, Object> returnAverageRating(@PathVariable("userid") String userId, HttpServletResponse response) throws IOException {
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         User user = users.findFirstByEmail(u.getName());
-
+        if(user == null) {
+            response.sendError(404, "User could not be found.");
+        }
         List<Rating> rating = ratings.findAllRatingByReceiverId(userId);
         int num = 0;
         for (Rating r : rating) {
