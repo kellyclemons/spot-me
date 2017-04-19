@@ -52,7 +52,7 @@ public class Profile implements HasId {
     @Transient
     List<String> activityNames;
 
-    @JsonProperty("availability")
+    @JsonProperty("availabilities")
     @Transient
     List<String> daysAvailable;
 
