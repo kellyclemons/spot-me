@@ -45,7 +45,6 @@ public class Profile implements HasId {
     @Column
     private String gender;
 
-
     @OneToOne
     private User user;
 
@@ -53,7 +52,7 @@ public class Profile implements HasId {
     @Transient
     List<String> activityNames;
 
-    @JsonProperty("days-available")
+    @JsonProperty("availability")
     @Transient
     List<String> daysAvailable;
 

@@ -111,7 +111,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/users/{id}", method = RequestMethod.PATCH)
-    public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser) throws Exception {
+    public Map<String, Object> updateProfile(HttpServletResponse response, @RequestBody RootParser<Profile> parser, @PathVariable("id") String id) throws Exception {
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         User user = users.findFirstByEmail(u.getName());
         if(user == null) {
@@ -181,7 +181,7 @@ public class UserController {
 
         ProfileView profileView = createProfile(p);
         return rootSerializer.serializeOne(
-                "/profile/" + profile.getId(),
+                "/users/" + id,
                 profileView,
                 profileSerializer);
     }
