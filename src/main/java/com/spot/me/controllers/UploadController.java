@@ -21,7 +21,6 @@ import com.amazonaws.services.s3.model.*;
 
 @RestController
 @CrossOrigin(origins = "*")
-//TODO to allow user to upload profile pictures.
 public class UploadController {
     ProfilePictureSerializer photoSerializer;
     RootSerializer rootSerializer;

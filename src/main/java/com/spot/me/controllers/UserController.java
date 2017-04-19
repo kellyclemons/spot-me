@@ -92,6 +92,10 @@ public class UserController {
         User user = users.findFirstByEmail(u.getName());
 
         Profile profile = profiles.findFirstByUserId(user.getId());
+        if (profiles.findFirstByUserId(user.getId()) == null) {
+             profile = new Profile(user);
+            profiles.save(profile);
+        }
         ProfileView pv = createProfile(profile);
         return rootSerializer.serializeOne(
                 "/users/" + pv.getId(),
@@ -138,7 +142,6 @@ public class UserController {
             p.setGender(profile.getGender());
         }
 
-
         if (profile.getActivityNames() != null) {
             userActivity.removeUserActivitiesById(user.getId());
             for (String a : profile.getActivityNames()) {
@@ -153,12 +156,20 @@ public class UserController {
                 userAvailability.save(new UserAvailability(user, a));
             }
         }
+
         if (profile.getLatitude() != 0) {
             p.setLatitude(profile.getLatitude());
         }
 
+        if(profile.getLatitude() == 0) {
+            p.setLatitude(p.getZipLatitude());
+        }
+
         if (profile.getLongitude() != 0) {
             p.setLongitude(profile.getLongitude());
+        }
+        if(profile.getLongitude() == 0) {
+            p.setLongitude(p.getZipLongitude());
         }
 
         if (profile.getAgeRange() != null) {
