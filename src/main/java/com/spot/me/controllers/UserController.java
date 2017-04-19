@@ -44,22 +44,9 @@ public class UserController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    RootSerializer rootSerializer;
-    UserSerializer userSerializer;
-    ActivityNameSerializer activityNameSerializer;
-    UserAvailabilitySerializer userAvailabilitySerializer;
-    ProfileSerializer profileSerializer;
-    ZipCodeSerializer zipCodeSerializer;
-
-
-    public UserController() {
-        rootSerializer = new RootSerializer();
-        userSerializer = new UserSerializer();
-        activityNameSerializer = new ActivityNameSerializer();
-        userAvailabilitySerializer = new UserAvailabilitySerializer();
-        profileSerializer = new ProfileSerializer();
-        zipCodeSerializer = new ZipCodeSerializer();
-    }
+    private RootSerializer rootSerializer = new RootSerializer();
+    private UserSerializer userSerializer = new UserSerializer();
+    private ProfileSerializer profileSerializer = new ProfileSerializer();
 
     @PostConstruct
     public void init() {
