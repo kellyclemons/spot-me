@@ -94,7 +94,7 @@ public class UserController {
             users.save(u);
         }
         return rootSerializer.serializeOne(
-                "/register/" + u.getId(),
+                "/users/" + u.getId(),
                 u,
                 userSerializer);
     }
@@ -196,7 +196,7 @@ public class UserController {
         Profile profile = profiles.findFirstByUserId(user.getId());
         ProfileView pv = createProfile(profile);
         return rootSerializer.serializeOne(
-                "/profile/" + pv.getId(),
+                "/users/" + pv.getId(),
                 pv,
                 profileSerializer);
     }
