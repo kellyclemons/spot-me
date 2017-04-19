@@ -204,10 +204,11 @@ public class UserController {
     @RequestMapping(path = "/users", method = RequestMethod.GET)
     public Map<String, Object> findAllProfileInZipCodeWithFilter(@RequestParam(value = "filter[zip]", required = false) String zipCode, @RequestParam(value = "filter[activity]", required = false) List<String> filter) {
         List<ProfileView> usersWithInterest = new ArrayList<>();
-        if (zipCode.equals("")) {
-            zipCode = "37243";
-        }
+
         List<Profile> usersInArea = profiles.findByZipCode(zipCode);
+        if (zipCode.equals("")) {
+            zipCode = "38401";
+        }
         if (filter == null || filter.size() <= 0) {
             for (Profile p : usersInArea) {
                 usersWithInterest.add(createProfile(p));
@@ -221,7 +222,7 @@ public class UserController {
             }
         }
 
-        return rootSerializer.serializeMany("/profile/", usersWithInterest, profileSerializer);
+        return rootSerializer.serializeMany("/users/", usersWithInterest, profileSerializer);
     }
 
     public ProfileView createProfile(Profile p) {
