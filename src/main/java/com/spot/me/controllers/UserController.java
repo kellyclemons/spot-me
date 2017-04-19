@@ -104,10 +104,12 @@ public class UserController {
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         User user = users.findFirstByEmail(u.getName());
 
+        Profile profile = profiles.findFirstByUserId(user.getId());
+        ProfileView pv = createProfile(profile);
         return rootSerializer.serializeOne(
-                "/users/" + user.getId(),
-                user,
-                userSerializer);
+                "/users/" + pv.getId(),
+                pv,
+                profileSerializer);
     }
 
     @RequestMapping(path = "/users/{id}", method = RequestMethod.PATCH)

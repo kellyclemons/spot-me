@@ -14,7 +14,7 @@ import java.util.Map;
 public class ProfileSerializer extends JsonDataSerializer {
 
     public String getType() {
-        return "profile";
+        return "users";
     }
 
     public Map<String, Object> getAttributes(HasId entity) {
